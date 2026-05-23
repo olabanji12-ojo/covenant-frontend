@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Users, MapPin, Droplet, HeartHandshake, UserRoundSearch, UserSearch } from 'lucide-react';
 import { RangeSlider } from '../../components/ui/RangeSlider';
 
@@ -29,12 +30,13 @@ const FilterRow: React.FC<FilterRowProps> = ({ icon, title, value }) => {
 };
 
 export const FiltersScreen = () => {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col min-h-screen bg-[#f7f5f0] w-full max-w-sm mx-auto relative overflow-hidden pb-8">
       
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-10 pb-6 w-full shrink-0">
-        <button className="text-gray-900 hover:opacity-70 transition-opacity -ml-1">
+        <button onClick={() => navigate(-1)} className="text-gray-900 hover:opacity-70 transition-opacity -ml-1">
           <ChevronLeft size={24} strokeWidth={1.5} />
         </button>
         <h1 className="text-[20px] font-bold text-gray-900 pl-4">Filters</h1>
@@ -93,7 +95,7 @@ export const FiltersScreen = () => {
 
       {/* Bottom Action Button */}
       <div className="px-6 w-full shrink-0">
-        <button className="w-full bg-[#1a3322] text-white font-medium text-[15px] rounded-full py-[18px] shadow-md hover:bg-[#122418] transition-colors mb-2">
+        <button onClick={() => navigate('/app/matches')} className="w-full bg-[#1a3322] text-white font-medium text-[15px] rounded-full py-[18px] shadow-md hover:bg-[#122418] transition-colors mb-2">
           Show Matches (50)
         </button>
       </div>

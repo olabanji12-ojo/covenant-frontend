@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import { ChevronLeft, Phone, MoreHorizontal, CheckCheck } from 'lucide-react';
 
 // ==========================================
@@ -51,6 +53,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ text, time, isOutgoing, a
 
 export const ActiveChatScreen = () => {
   const [inputText, setInputText] = useState('');
+  const navigate = useNavigate();
 
   // Dummy Messages from your Figma Screenshot
   const messages = [
@@ -67,7 +70,7 @@ export const ActiveChatScreen = () => {
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-10 pb-4 bg-[#f7f5f0] z-10 shrink-0">
         <div className="flex items-center gap-3">
-          <button className="text-gray-900 hover:opacity-70 transition-opacity">
+          <button onClick={() => navigate(-1)} className="text-gray-900 hover:opacity-70 transition-opacity">
             <ChevronLeft size={28} strokeWidth={1.5} />
           </button>
           
@@ -124,7 +127,7 @@ export const ActiveChatScreen = () => {
         {/* Action Features */}
         <div className="flex justify-between items-center px-4">
           
-          <button className="flex flex-col items-center gap-1.5 hover:opacity-80 transition-opacity">
+          <button onClick={() => navigate('/app/share-scripture')} className="flex flex-col items-center gap-1.5 hover:opacity-80 transition-opacity">
             <div className="text-[24px] leading-none">📖</div>
             <span className="text-[11px] font-bold text-[#489954]">Share verse</span>
           </button>

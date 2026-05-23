@@ -1,7 +1,8 @@
-import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Heart } from 'lucide-react';
 
 export const MatchSuccessScreen = () => {
+  const navigate = useNavigate();
   return (
     // Beautiful full-screen green gradient!
     <div className="min-h-screen bg-gradient-to-b from-[#3b5941] to-[#5a9c66] flex flex-col items-center py-12 px-6">
@@ -59,12 +60,11 @@ export const MatchSuccessScreen = () => {
         <div className="mt-auto pt-6 pb-8 w-full flex flex-col items-center gap-4 px-2">
           
           {/* Send a Message Button (Solid Dark Green) */}
-          <button className="w-full bg-[#1a3322] text-white font-medium rounded-full py-[14px] shadow-md hover:bg-[#122418] transition-colors">
+          <button onClick={() => navigate('/app/chat')} className="w-full bg-[#1a3322] text-white font-medium rounded-full py-[14px] shadow-md hover:bg-[#122418] transition-colors">
             Send a Message
           </button>
           
-          {/* Keep Swiping Button (Hollow Outline) */}
-          <button className="w-full bg-transparent border-[1.5px] border-white/80 text-white font-medium rounded-full py-[14px] hover:bg-white/10 transition-colors">
+          <button onClick={() => navigate('/app/discover')} className="w-full bg-transparent border-[1.5px] border-white/80 text-white font-medium rounded-full py-[14px] hover:bg-white/10 transition-colors">
             Keep swiping
           </button>
           

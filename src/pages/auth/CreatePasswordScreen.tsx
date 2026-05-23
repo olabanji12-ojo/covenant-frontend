@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TextInput } from '../../components/ui/TextInput';
 import { PasswordInput } from '../../components/ui/PasswordInput';
 import { Button } from '../../components/ui/Button';
 import { Mail, CheckCircle2 } from 'lucide-react';
 
 export const CreatePasswordScreen = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -66,7 +68,7 @@ export const CreatePasswordScreen = () => {
         {/* Footer Section */}
         {/* mt-auto automatically eats up all available empty space above it, pushing the button to the bottom! */}
         <div className="mt-auto pt-10 pb-4 w-full">
-          <Button variant="primary">
+          <Button variant="primary" onClick={() => navigate('/verify')}>
             Continue
           </Button>
         </div>

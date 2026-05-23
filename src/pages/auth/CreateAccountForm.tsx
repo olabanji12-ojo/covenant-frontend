@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TextInput } from '../../components/ui/TextInput';
 import { PillToggle } from '../../components/forms/PillToggle';
 import { Button } from '../../components/ui/Button';
 import { User, Calendar } from 'lucide-react';
 
 export const CreateAccountForm = () => {
+  const navigate = useNavigate();
   // We use React state to track the form inputs
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -43,6 +45,7 @@ export const CreateAccountForm = () => {
           />
 
           <TextInput 
+            type="date"
             label="Date of Birth" 
             placeholder="MM/ DD/ YYYY" 
             icon={Calendar}
@@ -74,12 +77,12 @@ export const CreateAccountForm = () => {
         </div>
 
         {/* Footer Section */}
-        <Button variant="primary" className="mt-10">
+        <Button variant="primary" className="mt-10" onClick={() => navigate('/create-password')}>
           Continue
         </Button>
         
         <p className="text-[15px] text-gray-500 mt-8 mb-12">
-          Already have an account? <span className="text-primary font-medium cursor-pointer hover:underline">Log in</span>
+          Already have an account? <span onClick={() => navigate('/app/discover')} className="text-primary font-medium cursor-pointer hover:underline">Log in</span>
         </p>
 
       </div>

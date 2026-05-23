@@ -1,7 +1,9 @@
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { CheckCircle2 } from 'lucide-react';
 
 export const VerifyAccountScreen = () => {
+  const navigate = useNavigate();
   const benefits = [
     "Build trust and authenticity",
     "Keep our community safe",
@@ -73,11 +75,11 @@ export const VerifyAccountScreen = () => {
         {/* Footer Section */}
         {/* mt-auto pushes everything to the bottom perfectly */}
         <div className="mt-auto pt-10 pb-4 w-full flex flex-col items-center gap-5">
-          <Button variant="primary">
+          <Button variant="primary" onClick={() => navigate('/faith-profile')}>
             Verify now
           </Button>
           
-          <button className="text-[15px] font-medium text-gray-500 hover:text-gray-700 transition-colors">
+          <button onClick={() => navigate('/faith-profile')} className="text-[15px] font-medium text-gray-500 hover:text-gray-700 transition-colors">
             Skip for now
           </button>
         </div>

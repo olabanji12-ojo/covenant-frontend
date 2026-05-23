@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Settings, CheckCircle2, User, ShieldCheck, Bell, Lock, Headset, UserPlus, Crown } from 'lucide-react';
 import { BottomNavBar } from '../../components/navigation/BottomNavBar';
 
@@ -49,6 +50,7 @@ const SettingsRow: React.FC<SettingsRowProps> = ({ icon, title, rightText, right
 };
 
 export const ProfileScreen = () => {
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f7f5f0] w-full max-w-sm mx-auto relative overflow-hidden pb-28">
@@ -82,7 +84,9 @@ export const ProfileScreen = () => {
               {/* Note: I'm using a white checkmark inside a green circle to match the design perfectly */}
               <CheckCircle2 size={16} className="text-[#f7f5f0] fill-[#1a3322]" />
             </div>
-            <p className="text-[11px] font-bold text-gray-500 cursor-pointer hover:underline">
+            <p 
+              onClick={() => navigate('/app/profile-detail')}
+              className="text-[11px] font-bold text-gray-500 cursor-pointer hover:underline">
               View Profile.
             </p>
           </div>

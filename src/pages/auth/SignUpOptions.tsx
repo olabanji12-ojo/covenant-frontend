@@ -1,6 +1,8 @@
+import { useNavigate } from 'react-router-dom';
 import { SocialAuthButton } from '../../components/forms/SocialAuthButton';
 
 export const SignUpOptions = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-[#f7f5f0] flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-sm flex flex-col items-center">
@@ -15,10 +17,10 @@ export const SignUpOptions = () => {
 
         {/* Buttons Section - Because we built the SocialAuthButton earlier, this is pure magic! */}
         <div className="w-full space-y-4">
-          <SocialAuthButton provider="Google" icon="/google 1.svg" />
-          <SocialAuthButton provider="Apple" icon="/apple-logo 1.svg" />
-          <SocialAuthButton provider="Facebook" icon="/communication 1.svg" />
-          <SocialAuthButton provider="Email" icon="/email (1) 1.svg" />
+          <SocialAuthButton onClick={() => navigate('/create-account')} provider="Google" icon="/google 1.svg" />
+          <SocialAuthButton onClick={() => navigate('/create-account')} provider="Apple" icon="/apple-logo 1.svg" />
+          <SocialAuthButton onClick={() => navigate('/create-account')} provider="Facebook" icon="/communication 1.svg" />
+          <SocialAuthButton onClick={() => navigate('/create-account')} provider="Email" icon="/email (1) 1.svg" />
         </div>
 
         {/* Footer Section */}
@@ -26,7 +28,7 @@ export const SignUpOptions = () => {
           We'll never post to any of your accounts.
         </p>
         <p className="text-[15px] text-gray-500">
-          Already have an account? <span className="text-primary font-medium cursor-pointer hover:underline">Log in</span>
+          Already have an account? <span onClick={() => navigate('/app/discover')} className="text-primary font-medium cursor-pointer hover:underline">Log in</span>
         </p>
 
       </div>

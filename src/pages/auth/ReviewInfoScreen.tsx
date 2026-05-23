@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { User, Activity, Droplet, Church, TrendingUp, MapPin } from 'lucide-react';
 
@@ -26,6 +27,7 @@ const ReviewRow: React.FC<ReviewRowProps> = ({ icon, label, value }) => (
 );
 
 export const ReviewInfoScreen = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-[#f7f5f0] flex flex-col items-center py-12 px-6">
       <div className="w-full max-w-sm flex flex-col flex-1 min-h-[calc(100vh-6rem)]">
@@ -90,12 +92,11 @@ export const ReviewInfoScreen = () => {
 
         {/* Footer Section */}
         <div className="mt-auto pt-6 pb-4 w-full flex flex-col items-center gap-5">
-          <Button variant="primary">
+          <Button variant="primary" onClick={() => navigate('/success')}>
             Looks Good!
           </Button>
           
-          {/* Note the text color is primary (#1a3322) here, not gray! */}
-          <button className="text-[15px] font-bold text-[#1a3322] hover:text-[#2a5332] transition-colors">
+          <button onClick={() => navigate('/add-photos')} className="text-[15px] font-bold text-[#1a3322] hover:text-[#2a5332] transition-colors">
             Edit information
           </button>
         </div>

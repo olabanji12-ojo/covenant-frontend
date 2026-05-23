@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BottomNavBar } from '../../components/navigation/BottomNavBar';
 
 // Yes! This is a completely reusable component. 
@@ -20,9 +21,13 @@ const MatchRow = ({
   imageUrl,
   isNewMatch = true,
 }: MatchRowProps) => {
+  const navigate = useNavigate();
+
   return (
-    // The border-b draws that subtle separator line between each user!
-    <div className="flex items-center gap-4 py-3 border-b border-gray-200 last:border-0 w-full">
+    // Clicking the whole row navigates to the profile detail screen!
+    <div 
+      onClick={() => navigate('/app/profile-detail')}
+      className="flex items-center gap-4 py-3 border-b border-gray-200 last:border-0 w-full cursor-pointer hover:opacity-80 transition-opacity active:scale-[0.99]">
       {/* Avatar Container */}
       <div className="w-[52px] h-[52px] flex-shrink-0">
         <img 

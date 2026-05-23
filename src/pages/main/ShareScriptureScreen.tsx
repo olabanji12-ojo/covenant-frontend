@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Search, Heart } from 'lucide-react';
 
 // ==========================================
@@ -45,6 +46,7 @@ const ScriptureCard: React.FC<ScriptureCardProps> = ({ reference, text, emoji })
 
 export const ShareScriptureScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   // Dummy Data straight from your Figma Screenshot
   const verses = [
@@ -70,7 +72,7 @@ export const ShareScriptureScreen = () => {
       
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-10 pb-6 w-full">
-        <button className="text-gray-900 hover:opacity-70 transition-opacity -ml-1">
+        <button onClick={() => navigate(-1)} className="text-gray-900 hover:opacity-70 transition-opacity -ml-1">
           <ChevronLeft size={24} strokeWidth={1.5} />
         </button>
         <h1 className="text-[20px] font-bold text-gray-900">Share Scripture</h1>

@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { StepProgressIndicator } from '../../components/navigation/StepProgressIndicator';
 import { Button } from '../../components/ui/Button';
 import { Plus } from 'lucide-react';
@@ -29,6 +30,7 @@ const PhotoUploadSlot = ({ imageUrl }: { imageUrl?: string }) => {
 };
 
 export const AddPhotosScreen = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-[#f7f5f0] flex flex-col items-center py-10 px-6">
       <div className="w-full max-w-sm flex flex-col flex-1 min-h-[calc(100vh-5rem)]">
@@ -61,11 +63,11 @@ export const AddPhotosScreen = () => {
 
         {/* Footer Section */}
         <div className="mt-auto pt-10 pb-4 w-full flex flex-col items-center gap-5">
-          <Button variant="primary">
+          <Button variant="primary" onClick={() => navigate('/review-info')}>
             Continue
           </Button>
           
-          <button className="text-[15px] font-medium text-gray-500 hover:text-gray-700 transition-colors">
+          <button onClick={() => navigate('/review-info')} className="text-[15px] font-medium text-gray-500 hover:text-gray-700 transition-colors">
             Skip for now
           </button>
         </div>

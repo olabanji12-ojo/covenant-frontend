@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import { ChevronLeft, MoreHorizontal, CheckCircle2, Church, ArrowUpRight, BookOpen, Heart } from 'lucide-react';
 
@@ -26,13 +27,14 @@ const ProfileAttributeRow: React.FC<ProfileAttributeRowProps> = ({ icon, title, 
 };
 
 export const UserProfileDetailScreen = () => {
+  const navigate = useNavigate();
   return (
     // Note: No Bottom Nav Bar on this detailed sub-screen!
     <div className="flex flex-col min-h-screen bg-[#f7f5f0] w-full max-w-sm mx-auto overflow-y-auto custom-scrollbar pb-8">
       
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-10 pb-6 w-full shrink-0">
-        <button className="text-gray-900 hover:opacity-70 transition-opacity -ml-1">
+        <button onClick={() => navigate(-1)} className="text-gray-900 hover:opacity-70 transition-opacity -ml-1">
           <ChevronLeft size={24} strokeWidth={1.5} />
         </button>
         
@@ -93,10 +95,19 @@ export const UserProfileDetailScreen = () => {
           />
         </div>
 
-        {/* Bottom Action Button (Corrected typo from Figma: "proflie" -> "profile") */}
-        <button className="w-full bg-[#1a3322] text-white font-medium rounded-full py-[14px] shadow-md hover:bg-[#122418] transition-colors mt-auto mb-2">
-          Edit profile
-        </button>
+        {/* Bottom Action Buttons */}
+        <div className="w-full flex flex-col gap-3 mt-auto mb-2">
+          <button 
+            onClick={() => navigate('/app/chat')}
+            className="w-full bg-[#1a3322] text-white font-medium rounded-full py-[14px] shadow-md hover:bg-[#122418] transition-colors">
+            Send Message
+          </button>
+          <button 
+            onClick={() => navigate(-1)}
+            className="w-full border border-gray-300 text-gray-600 font-medium rounded-full py-[14px] hover:bg-gray-100 transition-colors">
+            Go Back
+          </button>
+        </div>
 
       </div>
     </div>

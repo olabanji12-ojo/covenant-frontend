@@ -1,7 +1,9 @@
 import { SlidersHorizontal, X, Heart, CheckCircle2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { BottomNavBar } from '../../components/navigation/BottomNavBar';
 
 export const DiscoverScreen = () => {
+  const navigate = useNavigate();
 
   return (
     // We increase padding to pb-36 to create a solid gap above the bottom nav bar!
@@ -11,7 +13,9 @@ export const DiscoverScreen = () => {
         {/* Header Section */}
         <div className="flex flex-col items-center pt-8 px-6 pb-4">
           <div className="w-full flex justify-between items-center mb-4">
-            <button className="text-gray-900">
+            <button 
+              onClick={() => navigate('/app/filters')}
+              className="text-gray-900 hover:opacity-70 transition-opacity">
               <SlidersHorizontal size={26} strokeWidth={1.5} />
             </button>
             <h1 className="text-[24px] font-bold text-gray-900">Discover</h1>
@@ -91,7 +95,9 @@ export const DiscoverScreen = () => {
 
                 {/* Like Button */}
                 <div className="flex flex-col items-center gap-1.5">
-                  <button className="w-[50px] h-[50px] rounded-full bg-[#1a3322] flex items-center justify-center shadow-md hover:scale-105 transition-transform text-white border border-[#1a3322]">
+                  <button 
+                    onClick={() => navigate('/app/match-success')}
+                    className="w-[50px] h-[50px] rounded-full bg-[#1a3322] flex items-center justify-center shadow-md hover:scale-105 transition-transform text-white border border-[#1a3322]">
                     <Heart size={22} strokeWidth={2.5} className="fill-white" />
                   </button>
                   <span className="text-[12px] font-bold text-[#489954]">Like</span>
