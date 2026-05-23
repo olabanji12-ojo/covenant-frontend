@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand Colors */
+  --color-primary: #1f3d28;
+  --color-cream: #f7f5f0;
+  
+  /* UI Element Colors */
+  --color-gold: #f8ebc7;          /* Matches Card */
+  --color-prayer: #faf5e3;        /* Prayer / Scripture Card */
+  
+  /* Chat Colors */
+  --color-chat-sender: #e6e5e3;   /* User typing (outgoing) */
+  --color-chat-receiver: #ebeee2; /* Next person (incoming) */
+}
+
+@layer base {
+  body {
+    background-color: var(--color-cream);
+    color: #111827; /* gray-900 */
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+}
