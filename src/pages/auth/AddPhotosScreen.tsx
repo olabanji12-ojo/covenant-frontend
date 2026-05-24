@@ -1,8 +1,10 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { StepProgressIndicator } from '../../components/navigation/StepProgressIndicator';
+import { Button } from '../../components/ui/Button';
 import { Plus } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../../store';
-import { updateUserProfile } from '../../store/authSlice';
 import { updateUserProfile } from '../../store/authSlice';
 
 // A simple internal component just for this screen
