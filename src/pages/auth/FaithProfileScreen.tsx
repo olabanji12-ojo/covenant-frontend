@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StepProgressIndicator } from '../../components/navigation/StepProgressIndicator';
 import { SelectDropdown } from '../../components/ui/SelectDropdown';
@@ -5,6 +6,11 @@ import { Button } from '../../components/ui/Button';
 
 export const FaithProfileScreen = () => {
   const navigate = useNavigate();
+  const [denomination, setDenomination] = useState('');
+  const [church_attendance, setChurchAttendance] = useState('');
+  const [prayer_frequency, setPrayerFrequency] = useState('');
+  const [bible_reading, setBibleReading] = useState('');
+
   return (
     <div className="min-h-screen bg-[#f7f5f0] flex flex-col items-center py-10 px-6">
       <div className="w-full max-w-sm flex flex-col flex-1 min-h-[calc(100vh-5rem)]">
@@ -29,6 +35,8 @@ export const FaithProfileScreen = () => {
           <SelectDropdown 
             label="Denomination"
             placeholder="Select denomination"
+            value={denomination}
+            onChange={(e) => setDenomination(e.target.value)}
             options={[
               { value: 'catholic', label: 'Catholic' },
               { value: 'protestant', label: 'Protestant' },
@@ -41,6 +49,8 @@ export const FaithProfileScreen = () => {
           <SelectDropdown 
             label="How often do you attend church?"
             placeholder="Select"
+            value={church_attendance}
+            onChange={(e) => setChurchAttendance(e.target.value)}
             options={[
               { value: 'multiple', label: 'Multiple times a week' },
               { value: 'weekly', label: 'Weekly' },
@@ -52,6 +62,8 @@ export const FaithProfileScreen = () => {
           <SelectDropdown 
             label="How often do you pray?"
             placeholder="Select"
+            value={prayer_frequency}
+            onChange={(e) => setPrayerFrequency(e.target.value)}
             options={[
               { value: 'multiple_daily', label: 'Multiple times a day' },
               { value: 'daily', label: 'Daily' },
@@ -63,6 +75,8 @@ export const FaithProfileScreen = () => {
           <SelectDropdown 
             label="How often do you read the Bible?"
             placeholder="Select"
+            value={bible_reading}
+            onChange={(e) => setBibleReading(e.target.value)}
             options={[
               { value: 'multiple_daily', label: 'Multiple times a day' },
               { value: 'daily', label: 'Daily' },
@@ -74,7 +88,11 @@ export const FaithProfileScreen = () => {
 
         {/* 3. Reusable Footer Section */}
         <div className="mt-auto pt-10 pb-4 w-full flex flex-col items-center gap-5">
-          <Button variant="primary" onClick={() => navigate('/intentions')}>
+          <Button variant="primary" onClick={() => {
+            navigate('/intentions', {
+              state: { denomination, church_attendance, prayer_frequency, bible_reading }
+            });
+          }}>
             Continue
           </Button>
           

@@ -13,6 +13,18 @@ export const CreateAccountForm = () => {
   const [dob, setDob] = useState('');
   const [gender, setGender] = useState('man');
   const [interestedIn, setInterestedIn] = useState('woman');
+  const [formError, setFormError] = useState('');
+
+  const handleContinue = () => {
+    setFormError('');
+    if (!firstName.trim() || !lastName.trim() || !dob.trim()) {
+      setFormError('Please fill in your first name, last name, and date of birth.');
+      return;
+    }
+    navigate('/create-password', {
+      state: { firstName, lastName, dob, gender, interestedIn }
+    });
+  };
 
   return (
     <div className="min-h-screen bg-[#f7f5f0] flex flex-col items-center py-12 px-6">
@@ -25,6 +37,12 @@ export const CreateAccountForm = () => {
         <p className="text-[15px] text-gray-500 text-center mb-10 leading-snug">
           Let's get to know you.
         </p>
+
+        {formError && (
+          <div className="w-full bg-red-50 text-red-600 text-[13px] font-medium p-3 rounded-lg mb-6 text-center border border-red-100">
+            {formError}
+          </div>
+        )}
 
         {/* Form Section */}
         <div className="w-full space-y-5">
@@ -77,7 +95,7 @@ export const CreateAccountForm = () => {
         </div>
 
         {/* Footer Section */}
-        <Button variant="primary" className="mt-10" onClick={() => navigate('/create-password')}>
+        <Button variant="primary" className="mt-10" onClick={handleContinue}>
           Continue
         </Button>
         

@@ -23,7 +23,6 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
         <select 
           // `appearance-none` removes the browser's default dropdown arrow so we can use our own Lucide icon
           className={`w-full appearance-none rounded-[14px] border border-gray-300 bg-transparent px-4 py-3.5 pr-10 text-gray-900 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer ${className}`}
-          defaultValue=""
           {...props}
         >
           <option value="" disabled hidden>{placeholder}</option>

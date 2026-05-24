@@ -40,7 +40,7 @@ export const WelcomeScreen = () => {
         <Button variant="primary" onClick={() => navigate('/signup')}>
           Create account
         </Button>
-        <Button variant="secondary" onClick={() => navigate('/app/discover')}>
+        <Button variant="secondary" onClick={() => navigate('/login')}>
           Sign in
         </Button>
         

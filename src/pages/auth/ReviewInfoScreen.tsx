@@ -1,7 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store';
 import { Button } from '../../components/ui/Button';
-import { User, Activity, Droplet, Church, TrendingUp, MapPin } from 'lucide-react';
+import { User, Activity, Droplet, Church, TrendingUp } from 'lucide-react';
 
 // Reusable row component just for this screen
 interface ReviewRowProps {
@@ -28,6 +30,25 @@ const ReviewRow: React.FC<ReviewRowProps> = ({ icon, label, value }) => (
 
 export const ReviewInfoScreen = () => {
   const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  // Helper to calculate age from DOB
+  const calculateAge = (dobString?: string) => {
+    if (!dobString) return 'N/A';
+    const dob = new Date(dobString);
+    const diff_ms = Date.now() - dob.getTime();
+    const age_dt = new Date(diff_ms); 
+    return Math.abs(age_dt.getUTCFullYear() - 1970).toString();
+  };
+
+  // Safe fallback values
+  const name = user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() : 'N/A';
+  const age = calculateAge(user?.dob);
+  const denomination = user?.denomination || 'Not specified';
+  const churchAttendance = user?.church_freq || 'Not specified';
+  const faith = user?.prayer_freq || 'Growing'; // Using prayer_freq as proxy for faith
+  const intentions = user?.intentions || 'Not specified';
+
   return (
     <div className="min-h-screen bg-[#f7f5f0] flex flex-col items-center py-12 px-6">
       <div className="w-full max-w-sm flex flex-col flex-1 min-h-[calc(100vh-6rem)]">
@@ -48,44 +69,38 @@ export const ReviewInfoScreen = () => {
           <ReviewRow 
             icon={<User size={18} strokeWidth={2} />} 
             label="Name" 
-            value="John Doe" 
+            value={name} 
           />
           
           <ReviewRow 
             icon={<Activity size={18} strokeWidth={2} />} 
             label="Age" 
-            value="29" 
+            value={age} 
           />
           
           <ReviewRow 
             icon={<Droplet size={18} strokeWidth={2} />} 
             label="Denomination" 
-            value="Baptist" 
+            value={denomination} 
           />
           
           <ReviewRow 
             icon={<Church size={18} strokeWidth={2} />} 
             label="Church Attendance" 
-            value="Every Sunday" 
+            value={churchAttendance} 
           />
           
           <ReviewRow 
             icon={<TrendingUp size={18} strokeWidth={2} />} 
             label="Faith" 
-            value="Growing" 
+            value={faith} 
           />
           
           <ReviewRow 
             // We use the custom diamond ring SVG here!
             icon={<img src="/diamond-ring 1.svg" alt="Ring" className="w-[18px] h-[18px] object-contain" />} 
             label="Intentions" 
-            value="Looking for marriage" 
-          />
-          
-          <ReviewRow 
-            icon={<MapPin size={18} strokeWidth={2} />} 
-            label="Location" 
-            value="Agege, Lagos" 
+            value={intentions} 
           />
           
         </div>

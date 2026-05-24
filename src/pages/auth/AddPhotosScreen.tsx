@@ -1,10 +1,20 @@
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StepProgressIndicator } from '../../components/navigation/StepProgressIndicator';
 import { Button } from '../../components/ui/Button';
 import { Plus } from 'lucide-react';
+import apiClient from '../../api/client';
 
 // A simple internal component just for this screen
-const PhotoUploadSlot = ({ imageUrl }: { imageUrl?: string }) => {
+const PhotoUploadSlot = ({ 
+  imageUrl, 
+  isLoading, 
+  onClick 
+}: { 
+  imageUrl?: string, 
+  isLoading?: boolean,
+  onClick: () => void 
+}) => {
   // If we have an image URL, we render a filled square
   if (imageUrl) {
     return (
@@ -18,10 +28,20 @@ const PhotoUploadSlot = ({ imageUrl }: { imageUrl?: string }) => {
     );
   }
 
+  // If loading, show spinner
+  if (isLoading) {
+    return (
+      <div className="relative w-full aspect-square rounded-[16px] bg-[#f0f0f0]/50 border-[1.5px] border-dashed border-gray-300 flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#489954] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   // If there is no image URL, we render the empty dashed box state!
   return (
     <button 
       type="button"
+      onClick={onClick}
       className="relative w-full aspect-square rounded-[16px] bg-[#f0f0f0]/50 border-[1.5px] border-dashed border-gray-300 flex items-center justify-center hover:bg-gray-200 transition-colors cursor-pointer"
     >
       <Plus size={32} className="text-gray-500" strokeWidth={1.5} />
@@ -31,11 +51,97 @@ const PhotoUploadSlot = ({ imageUrl }: { imageUrl?: string }) => {
 
 export const AddPhotosScreen = () => {
   const navigate = useNavigate();
+  
+  // Track uploaded photos and loading state
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [uploadingSlot, setUploadingSlot] = useState<number | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Trigger file selection
+  const handleSlotClick = () => {
+    if (photos.length < 4) {
+      fileInputRef.current?.click();
+    }
+  };
+
+  // Upload to Cloudinary
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // We use the next available slot index for the loading state (photos.length)
+    setUploadingSlot(photos.length);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      // Your unsigned preset name
+      formData.append('upload_preset', 'church-matching');
+      // Your cloud name is church-match
+
+      const response = await fetch(`https://api.cloudinary.com/v1_1/church-match/image/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.secure_url) {
+        setPhotos(prev => [...prev, data.secure_url]);
+      } else {
+        console.error('Cloudinary upload failed:', data);
+        alert(`Cloudinary Error: ${data.error?.message || 'Unknown error'}. Please check if the cloud name is correct and if the upload preset "church-matching" is set to "Unsigned".`);
+      }
+    } catch (err) {
+      console.error('Error uploading file:', err);
+    } finally {
+      setUploadingSlot(null);
+      // Reset input so the same file could be selected again if needed
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleContinue = async () => {
+    if (photos.length === 0) {
+      // You can require at least one photo, or let them skip
+      return navigate('/review-info');
+    }
+
+    setIsSaving(true);
+    try {
+      // PATCH the uploaded photos to the backend
+      await apiClient.patch('/users/me', {
+        photos: photos
+      });
+      navigate('/review-info');
+    } catch (err) {
+      console.error('Failed to save photos:', err);
+      // Proceed anyway or show error
+      navigate('/review-info');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f7f5f0] flex flex-col items-center py-10 px-6">
+      
+      {/* Hidden file input */}
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        style={{ display: 'none' }} 
+        accept="image/*" 
+        onChange={handleFileChange} 
+      />
+
       <div className="w-full max-w-sm flex flex-col flex-1 min-h-[calc(100vh-5rem)]">
         
-        {/* Progress Bar (Step 3 of 3) - All three dashes will be solid black! */}
+        {/* Progress Bar (Step 3 of 3) */}
         <div className="w-full flex justify-center mb-10 mt-2">
           <StepProgressIndicator totalSteps={3} currentStep={3} />
         </div>
@@ -52,19 +158,26 @@ export const AddPhotosScreen = () => {
 
         {/* 2x2 Photo Grid Layout */}
         <div className="w-full grid grid-cols-2 gap-4 mb-8">
-          {/* Slot 1: Filled with a dummy image from Unsplash to match your screenshot! */}
-          <PhotoUploadSlot imageUrl="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" />
-          
-          {/* Slots 2, 3, 4: Empty dashed borders waiting for uploads */}
-          <PhotoUploadSlot />
-          <PhotoUploadSlot />
-          <PhotoUploadSlot />
+          {[0, 1, 2, 3].map((slotIndex) => {
+            const isUploaded = slotIndex < photos.length;
+            const isUploading = slotIndex === uploadingSlot;
+            const imageUrl = isUploaded ? photos[slotIndex] : undefined;
+
+            return (
+              <PhotoUploadSlot 
+                key={slotIndex}
+                imageUrl={imageUrl} 
+                isLoading={isUploading}
+                onClick={handleSlotClick} 
+              />
+            );
+          })}
         </div>
 
         {/* Footer Section */}
         <div className="mt-auto pt-10 pb-4 w-full flex flex-col items-center gap-5">
-          <Button variant="primary" onClick={() => navigate('/review-info')}>
-            Continue
+          <Button variant="primary" onClick={handleContinue} disabled={isSaving}>
+            {isSaving ? 'Saving...' : 'Continue'}
           </Button>
           
           <button onClick={() => navigate('/review-info')} className="text-[15px] font-medium text-gray-500 hover:text-gray-700 transition-colors">

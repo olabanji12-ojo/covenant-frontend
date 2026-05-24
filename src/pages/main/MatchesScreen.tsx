@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BottomNavBar } from '../../components/navigation/BottomNavBar';
+import apiClient from '../../api/client';
+import type { User, ApiResponse } from '../../types';
+import { HeartCrack } from 'lucide-react';
 
 // Yes! This is a completely reusable component. 
 // When you connect your backend, you just pass real data into these props.
@@ -14,19 +17,20 @@ interface MatchRowProps {
 }
 
 const MatchRow = ({
+  matchUser,
   name,
   age,
   profession,
   location,
   imageUrl,
   isNewMatch = true,
-}: MatchRowProps) => {
+}: MatchRowProps & { matchUser: any }) => {
   const navigate = useNavigate();
 
   return (
     // Clicking the whole row navigates to the profile detail screen!
     <div 
-      onClick={() => navigate('/app/profile-detail')}
+      onClick={() => navigate('/app/profile-detail', { state: { user: matchUser, isMatch: true } })}
       className="flex items-center gap-4 py-3 border-b border-gray-200 last:border-0 w-full cursor-pointer hover:opacity-80 transition-opacity active:scale-[0.99]">
       {/* Avatar Container */}
       <div className="w-[52px] h-[52px] flex-shrink-0">
@@ -63,19 +67,37 @@ const MatchRow = ({
 export const MatchesScreen = () => {
   // State for the custom top segmented control
   const [activeFilter, setActiveFilter] = useState<'All' | 'New' | 'Prayed for'>('All');
+  const [matchesData, setMatchesData] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Hardcoded dummy data strictly matching your Figma screenshot!
-  const matchesData = [
-    { name: 'Jerry', age: 29, profession: 'Engineer', location: 'Osogbo, Osun', imageUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80' },
-    { name: 'Lydia', age: 25, profession: 'Nurse', location: 'Ikirun, Osun', imageUrl: 'https://images.unsplash.com/photo-1531123897727-8f129e1bf98c?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80' },
-    { name: 'Joy', age: 24, profession: 'Doctor', location: 'Osogbo, Osun', imageUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80' },
-    { name: 'Jimmy', age: 26, profession: 'Engineer', location: 'VI, Lagos', imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80' },
-    { name: 'Shola', age: 29, profession: 'Teacher', location: 'Maryland, Lagos', imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80' },
-    { name: 'Adams', age: 30, profession: 'Lawyer', location: 'Bariga, Lagos', imageUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80' },
-    { name: 'Victoria', age: 26, profession: 'Graphic Designer', location: 'Ikeja, Lagos', imageUrl: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80' },
-    { name: 'Daniel', age: 29, profession: 'Youth Pastor', location: 'Ikoyi, Lagos', imageUrl: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80' },
-    { name: 'Samantha', age: 28, profession: 'Entrepreneur', location: 'Ajah, Lagos', imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80' },
-  ];
+  useEffect(() => {
+    const fetchMatches = async () => {
+      try {
+        // Fetching potential matches from our real backend instead of hardcoded data!
+        const res = await apiClient.get<ApiResponse<User[]>>('/matches');
+        if (res.data.data) {
+          setMatchesData(res.data.data);
+        }
+      } catch (err) {
+        console.error("Failed to load matches:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMatches();
+  }, []);
+
+  // Helper to get age
+  const calculateAge = (dobString?: string) => {
+    if (!dobString) return 29;
+    const dob = new Date(dobString);
+    // eslint-disable-next-line react-hooks/purity
+    const diff_ms = Date.now() - dob.getTime();
+    const age_dt = new Date(diff_ms); 
+    return Math.abs(age_dt.getUTCFullYear() - 1970);
+  };
+
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-[#f7f5f0] flex flex-col items-center">
@@ -107,18 +129,48 @@ export const MatchesScreen = () => {
         {/* Scrollable List Area */}
         {/* pb-24 adds padding at the bottom of the scroll area so the last item isn't hidden by the navbar */}
         <div className="flex-1 px-8 pb-28 overflow-y-auto w-full">
-          <div className="flex flex-col w-full">
-            {matchesData.map((match, idx) => (
-              <MatchRow 
-                key={idx}
-                name={match.name}
-                age={match.age}
-                profession={match.profession}
-                location={match.location}
-                imageUrl={match.imageUrl}
-                isNewMatch={true}
-              />
-            ))}
+          <div className="flex flex-col w-full h-full">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center h-full mt-10">
+                <div className="w-8 h-8 border-4 border-[#1a3322] border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p className="text-center text-sm font-medium text-[#1a3322]">Finding your matches...</p>
+              </div>
+            ) : matchesData.length === 0 ? (
+              <div className="flex flex-col items-center justify-center text-center mt-20 px-4">
+                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm mb-6 border border-gray-100">
+                  <HeartCrack size={36} className="text-gray-300" strokeWidth={1.5} />
+                </div>
+                <h2 className="text-[18px] font-bold text-gray-900 mb-2">No Matches Yet</h2>
+                <p className="text-[14px] text-gray-500 leading-relaxed mb-8">
+                  You haven't matched with anyone yet. Keep exploring the discovery feed to find faith-filled connections!
+                </p>
+                <button 
+                  onClick={() => navigate('/app/discover')}
+                  className="bg-[#1a3322] text-white font-medium px-8 py-3 rounded-full hover:bg-[#122418] transition-colors shadow-sm"
+                >
+                  Start Discovering
+                </button>
+              </div>
+            ) : (
+              matchesData.map((match, idx) => {
+                const name = `${match.first_name || ''} ${match.last_name || ''}`.trim() || 'Anonymous';
+                const age = calculateAge(match.dob);
+                const imageUrl = match.photos && match.photos.length > 0 ? match.photos[0] : '/male1.png';
+                
+                return (
+                  <MatchRow 
+                    key={match.id || idx}
+                    matchUser={match}
+                    name={name}
+                    age={age}
+                    profession={'Professional'}
+                    location={'Local area'}
+                    imageUrl={imageUrl}
+                    isNewMatch={true}
+                  />
+                );
+              })
+            )}
           </div>
         </div>
 
