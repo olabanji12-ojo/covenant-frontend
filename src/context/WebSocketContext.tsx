@@ -26,10 +26,10 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       return;
     }
 
-    // Use the dynamic WS URL from Vercel config, or fallback to localhost
-    const wsUrl = import.meta.env.VITE_WS_URL 
-      ? `${import.meta.env.VITE_WS_URL}?auth_token=${token}`
-      : `ws://localhost:8081/ws/v1/chat?auth_token=${token}`;
+    // Derive WS URL from API_BASE_URL (replace http with ws, and /api/v1 with /ws/v1/chat)
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8081/api/v1';
+    const wsBaseUrl = apiBaseUrl.replace(/^http/, 'ws').replace(/\/api\/v1\/?$/, '/ws/v1/chat');
+    const wsUrl = `${wsBaseUrl}?auth_token=${token}`;
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
