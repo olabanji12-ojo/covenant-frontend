@@ -79,9 +79,8 @@ export const AddPhotosScreen = () => {
       formData.append('file', file);
       // Your unsigned preset name
       formData.append('upload_preset', 'church-matching');
-      // Your cloud name is church-match
-
-      const response = await fetch(`https://api.cloudinary.com/v1_1/church-match/image/upload`, {
+      // Your cloud name is dbbsvb9b5
+      const response = await fetch(`https://api.cloudinary.com/v1_1/dbbsvb9b5/image/upload`, {
         method: 'POST',
         body: formData,
       });
