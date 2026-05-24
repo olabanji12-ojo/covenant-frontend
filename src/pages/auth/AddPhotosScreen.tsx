@@ -1,9 +1,9 @@
 import { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { StepProgressIndicator } from '../../components/navigation/StepProgressIndicator';
-import { Button } from '../../components/ui/Button';
 import { Plus } from 'lucide-react';
-import apiClient from '../../api/client';
+import { useDispatch } from 'react-redux';
+import type { AppDispatch } from '../../store';
+import { updateUserProfile } from '../../store/authSlice';
+import { updateUserProfile } from '../../store/authSlice';
 
 // A simple internal component just for this screen
 const PhotoUploadSlot = ({ 
@@ -51,6 +51,7 @@ const PhotoUploadSlot = ({
 
 export const AddPhotosScreen = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
   
   // Track uploaded photos and loading state
   const [photos, setPhotos] = useState<string[]>([]);
@@ -112,10 +113,8 @@ export const AddPhotosScreen = () => {
 
     setIsSaving(true);
     try {
-      // PATCH the uploaded photos to the backend
-      await apiClient.patch('/users/me', {
-        photos: photos
-      });
+      // Dispatch to Redux which patches backend AND updates local state
+      await dispatch(updateUserProfile({ photos: photos }));
       navigate('/review-info');
     } catch (err) {
       console.error('Failed to save photos:', err);

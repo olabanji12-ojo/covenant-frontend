@@ -7,9 +7,9 @@ import { Button } from '../../components/ui/Button';
 export const FaithProfileScreen = () => {
   const navigate = useNavigate();
   const [denomination, setDenomination] = useState('');
-  const [church_attendance, setChurchAttendance] = useState('');
-  const [prayer_frequency, setPrayerFrequency] = useState('');
-  const [bible_reading, setBibleReading] = useState('');
+  const [church_freq, setChurchFreq] = useState('');
+  const [prayer_freq, setPrayerFreq] = useState('');
+  const [bible_freq, setBibleFreq] = useState('');
 
   return (
     <div className="min-h-screen bg-[#f7f5f0] flex flex-col items-center py-10 px-6">
@@ -49,8 +49,8 @@ export const FaithProfileScreen = () => {
           <SelectDropdown 
             label="How often do you attend church?"
             placeholder="Select"
-            value={church_attendance}
-            onChange={(e) => setChurchAttendance(e.target.value)}
+            value={church_freq}
+            onChange={(e) => setChurchFreq(e.target.value)}
             options={[
               { value: 'multiple', label: 'Multiple times a week' },
               { value: 'weekly', label: 'Weekly' },
@@ -62,8 +62,8 @@ export const FaithProfileScreen = () => {
           <SelectDropdown 
             label="How often do you pray?"
             placeholder="Select"
-            value={prayer_frequency}
-            onChange={(e) => setPrayerFrequency(e.target.value)}
+            value={prayer_freq}
+            onChange={(e) => setPrayerFreq(e.target.value)}
             options={[
               { value: 'multiple_daily', label: 'Multiple times a day' },
               { value: 'daily', label: 'Daily' },
@@ -75,8 +75,8 @@ export const FaithProfileScreen = () => {
           <SelectDropdown 
             label="How often do you read the Bible?"
             placeholder="Select"
-            value={bible_reading}
-            onChange={(e) => setBibleReading(e.target.value)}
+            value={bible_freq}
+            onChange={(e) => setBibleFreq(e.target.value)}
             options={[
               { value: 'multiple_daily', label: 'Multiple times a day' },
               { value: 'daily', label: 'Daily' },
@@ -90,7 +90,7 @@ export const FaithProfileScreen = () => {
         <div className="mt-auto pt-10 pb-4 w-full flex flex-col items-center gap-5">
           <Button variant="primary" onClick={() => {
             navigate('/intentions', {
-              state: { denomination, church_attendance, prayer_frequency, bible_reading }
+              state: { denomination, church_freq, prayer_freq, bible_freq }
             });
           }}>
             Continue
