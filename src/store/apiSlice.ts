@@ -1,7 +1,7 @@
 import { createApi, type BaseQueryFn } from '@reduxjs/toolkit/query/react';
 import type { AxiosRequestConfig, AxiosError } from 'axios';
 import apiClient from '../api/client';
-import type { User, Prayer } from '../types';
+import type { User, Prayer, MatchResponse } from '../types';
 
 // Create a custom baseQuery that uses our highly configured Axios client under the hood
 const axiosBaseQuery =
@@ -44,7 +44,7 @@ export const apiSlice = createApi({
     }),
 
     // MATCHES & MESSAGES
-    getMatches: builder.query<User[], void>({
+    getMatches: builder.query<MatchResponse[], void>({
       query: () => ({ url: '/matches', method: 'GET' }),
       providesTags: ['Match'],
     }),

@@ -4,7 +4,7 @@ import { ChevronLeft, Settings, CheckCircle2, Bell, Lock, Crown, LogOut } from '
 import { BottomNavBar } from '../../components/navigation/BottomNavBar';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState, AppDispatch } from '../../store';
-import { logout } from '../../store/authSlice';
+import { logoutUser } from '../../store/authSlice';
 import { ConfirmModal } from '../../components/ui/ConfirmModal';
 
 // ==========================================
@@ -182,7 +182,7 @@ export const ProfileScreen = () => {
         isDestructive={true}
         onConfirm={() => {
           setIsLogoutOpen(false);
-          dispatch(logout());
+          dispatch(logoutUser());
           navigate('/');
         }}
         onCancel={() => setIsLogoutOpen(false)}

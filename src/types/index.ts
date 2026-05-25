@@ -37,6 +37,11 @@ export interface Match {
   updated_at: string;
 }
 
+export interface MatchResponse {
+  user: User;
+  last_message: Message | null;
+}
+
 export interface Prayer {
   id: string;
   author_id: string;

@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useWebSocket } from '../../context/WebSocketContext';
 import type { RootState } from '../../store';
 import { setChatHistory } from '../../store/chatSlice';
+import { apiSlice } from '../../store/apiSlice';
 import apiClient from '../../api/client';
 import type { Message } from '../../types';
 import { ChevronLeft, Phone, MoreHorizontal, CheckCheck, SendHorizontal } from 'lucide-react';
@@ -160,10 +161,18 @@ export const ActiveChatScreen = () => {
     }
   };
 
-  const handleUnmatchConfirm = () => {
-    setIsUnmatchOpen(false);
-    // Dynamic mock for a clean and fast UX before the unmatch endpoint integration
-    navigate('/app/matches');
+  const handleUnmatchConfirm = async () => {
+    if (!matchId) return;
+    try {
+      await apiClient.delete(`/matches/${matchId}`);
+      // Force the RTK query cache for matches to invalidate so it disappears from the inbox
+      dispatch(apiSlice.util.invalidateTags(['Match']));
+    } catch (err) {
+      console.error('Failed to unmatch:', err);
+    } finally {
+      setIsUnmatchOpen(false);
+      navigate('/app/chat'); // Go back to the messages inbox
+    }
   };
 
   return (

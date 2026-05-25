@@ -45,4 +45,12 @@ export class AuthService {
     if (response.data.error) throw new Error(response.data.error);
     return response.data.data!;
   }
+
+  /**
+   * Logout user (clears HttpOnly cookie)
+   * POST /auth/logout
+   */
+  static async logout(): Promise<void> {
+    await apiClient.post('/auth/logout');
+  }
 }

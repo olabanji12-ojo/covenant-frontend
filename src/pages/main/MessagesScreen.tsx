@@ -46,9 +46,18 @@ export const MessagesScreen = () => {
           </div>
         ) : (
           <div className="flex flex-col gap-4 mt-2">
-            {matches.map((user, idx) => {
+            {matches.map((matchResp, idx) => {
+              const user = matchResp.user;
+              const lastMessage = matchResp.last_message;
               const displayName = (user.first_name || 'Match').split(' ')[0];
               const avatar = user.photos?.[0] || '/female1.jpg';
+              
+              // Format time if lastMessage exists
+              let timeString = 'New match';
+              if (lastMessage && lastMessage.created_at) {
+                timeString = new Date(lastMessage.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              }
+
               return (
                 <div 
                   key={user.id || idx}
@@ -61,10 +70,10 @@ export const MessagesScreen = () => {
                   <div className="flex-1 flex flex-col justify-center">
                     <div className="flex items-center justify-between mb-1">
                       <h3 className="font-bold text-[15px] text-gray-900">{displayName}</h3>
-                      <span className="text-[10px] text-gray-400 font-medium">New match</span>
+                      <span className="text-[10px] text-gray-400 font-medium">{timeString}</span>
                     </div>
-                    <p className="text-[13px] text-gray-500 truncate w-[200px]">
-                      Tap to start chatting!
+                    <p className={`text-[13px] truncate w-[200px] ${lastMessage ? 'text-gray-600' : 'text-gray-400 italic'}`}>
+                      {lastMessage ? lastMessage.content : 'Tap to start chatting!'}
                     </p>
                   </div>
                 </div>
