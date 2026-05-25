@@ -65,7 +65,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return () => {
       ws.close();
     };
-  }, [isAuthenticated, token, dispatch]);
+  }, [isAuthenticated, token, dispatch, user?.id]);
 
   const sendMessage = (targetUserId: string, content: string, type: 'text' | 'prayer' = 'text') => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
