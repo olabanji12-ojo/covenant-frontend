@@ -19,7 +19,7 @@ export const IntentionsScreen = () => {
   return (
     <div className="min-h-screen bg-[#f7f5f0] flex flex-col items-center py-10 px-6">
       <div className="w-full max-w-sm flex flex-col flex-1 min-h-[calc(100vh-5rem)]">
-        
+
         {/* Progress Bar: We pass currentStep={2} so the first TWO dashes are black! */}
         <div className="w-full flex justify-center mb-10 mt-2">
           <StepProgressIndicator totalSteps={3} currentStep={2} />
@@ -37,7 +37,7 @@ export const IntentionsScreen = () => {
 
         {/* Selection Cards Component reuse! */}
         <div className="w-full space-y-4 mb-8">
-          <SelectionCard 
+          <SelectionCard
             label="Looking for Marriage"
             // We pass your exact SVGs right into the icon prop!
             icon={<img src="/diamond-ring 1.svg" alt="Ring" className="w-[22px] h-[22px] object-contain" />}
@@ -45,14 +45,14 @@ export const IntentionsScreen = () => {
             onClick={() => setIntention('Looking for Marriage')}
           />
 
-          <SelectionCard 
+          <SelectionCard
             label="Serious Relationship"
             icon={<img src="/heart (3) 1.svg" alt="Heart" className="w-[22px] h-[22px] object-contain" />}
             selected={intention === 'Serious Relationship'}
             onClick={() => setIntention('Serious Relationship')}
           />
 
-          <SelectionCard 
+          <SelectionCard
             label="Friendship with purpose"
             icon={<img src="/friend 1.svg" alt="Friends" className="w-[22px] h-[22px] object-contain" />}
             selected={intention === 'Friendship with purpose'}
@@ -62,8 +62,8 @@ export const IntentionsScreen = () => {
 
         {/* Footer Section */}
         <div className="mt-auto pt-10 pb-4 w-full flex flex-col items-center gap-5">
-          <Button 
-            variant="primary" 
+          <Button
+            variant="primary"
             disabled={isLoading}
             onClick={async () => {
               const updateData = {
@@ -76,7 +76,7 @@ export const IntentionsScreen = () => {
           >
             {isLoading ? 'Saving...' : 'Continue'}
           </Button>
-          
+
           <button onClick={() => navigate('/add-photos')} className="text-[15px] font-medium text-gray-500 hover:text-gray-700 transition-colors">
             Skip for now
           </button>

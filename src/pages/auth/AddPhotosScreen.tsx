@@ -8,22 +8,22 @@ import type { AppDispatch } from '../../store';
 import { updateUserProfile } from '../../store/authSlice';
 
 // A simple internal component just for this screen
-const PhotoUploadSlot = ({ 
-  imageUrl, 
-  isLoading, 
-  onClick 
-}: { 
-  imageUrl?: string, 
+const PhotoUploadSlot = ({
+  imageUrl,
+  isLoading,
+  onClick
+}: {
+  imageUrl?: string,
   isLoading?: boolean,
-  onClick: () => void 
+  onClick: () => void
 }) => {
   // If we have an image URL, we render a filled square
   if (imageUrl) {
     return (
       <div className="relative w-full aspect-square rounded-[16px] overflow-hidden shadow-sm">
-        <img 
-          src={imageUrl} 
-          alt="Uploaded Profile" 
+        <img
+          src={imageUrl}
+          alt="Uploaded Profile"
           className="w-full h-full object-cover"
         />
       </div>
@@ -41,7 +41,7 @@ const PhotoUploadSlot = ({
 
   // If there is no image URL, we render the empty dashed box state!
   return (
-    <button 
+    <button
       type="button"
       onClick={onClick}
       className="relative w-full aspect-square rounded-[16px] bg-[#f0f0f0]/50 border-[1.5px] border-dashed border-gray-300 flex items-center justify-center hover:bg-gray-200 transition-colors cursor-pointer"
@@ -54,12 +54,12 @@ const PhotoUploadSlot = ({
 export const AddPhotosScreen = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  
+
   // Track uploaded photos and loading state
   const [photos, setPhotos] = useState<string[]>([]);
   const [uploadingSlot, setUploadingSlot] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Trigger file selection
@@ -129,18 +129,18 @@ export const AddPhotosScreen = () => {
 
   return (
     <div className="min-h-screen bg-[#f7f5f0] flex flex-col items-center py-10 px-6">
-      
+
       {/* Hidden file input */}
-      <input 
-        type="file" 
-        ref={fileInputRef} 
-        style={{ display: 'none' }} 
-        accept="image/*" 
-        onChange={handleFileChange} 
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: 'none' }}
+        accept="image/*"
+        onChange={handleFileChange}
       />
 
       <div className="w-full max-w-sm flex flex-col flex-1 min-h-[calc(100vh-5rem)]">
-        
+
         {/* Progress Bar (Step 3 of 3) */}
         <div className="w-full flex justify-center mb-10 mt-2">
           <StepProgressIndicator totalSteps={3} currentStep={3} />
@@ -164,11 +164,11 @@ export const AddPhotosScreen = () => {
             const imageUrl = isUploaded ? photos[slotIndex] : undefined;
 
             return (
-              <PhotoUploadSlot 
+              <PhotoUploadSlot
                 key={slotIndex}
-                imageUrl={imageUrl} 
+                imageUrl={imageUrl}
                 isLoading={isUploading}
-                onClick={handleSlotClick} 
+                onClick={handleSlotClick}
               />
             );
           })}
@@ -179,7 +179,7 @@ export const AddPhotosScreen = () => {
           <Button variant="primary" onClick={handleContinue} disabled={isSaving}>
             {isSaving ? 'Saving...' : 'Continue'}
           </Button>
-          
+
           <button onClick={() => navigate('/review-info')} className="text-[15px] font-medium text-gray-500 hover:text-gray-700 transition-colors">
             Skip for now
           </button>

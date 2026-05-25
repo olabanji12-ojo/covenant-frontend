@@ -72,14 +72,14 @@ export const FiltersScreen = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f7f5f0] w-full max-w-sm mx-auto relative overflow-hidden pb-8">
-      
+
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-10 pb-6 w-full shrink-0">
         <button onClick={() => navigate(-1)} className="text-gray-900 hover:opacity-70 transition-opacity -ml-1">
           <ChevronLeft size={24} strokeWidth={1.5} />
         </button>
         <h1 className="text-[20px] font-bold text-gray-900 pl-4">Filters</h1>
-        <button 
+        <button
           onClick={handleClearAll}
           className="text-[#1f3d28] font-bold text-[13px] hover:opacity-70 transition-opacity"
         >
@@ -88,10 +88,10 @@ export const FiltersScreen = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col items-center w-full px-6 pb-24">
-        
+
         {/* Age Range Section */}
         <div className="w-full bg-white/60 backdrop-blur-sm rounded-[24px] border border-white/40 p-5 mb-6 shadow-sm mt-2">
-          <RangeSlider 
+          <RangeSlider
             label={
               <div className="flex items-center gap-3">
                 <Users size={18} className="text-[#1f3d28]" strokeWidth={2} />
@@ -116,7 +116,7 @@ export const FiltersScreen = () => {
               Within {distance} miles
             </span>
           </div>
-          <input 
+          <input
             type="range"
             min="5"
             max="100"
@@ -132,8 +132,8 @@ export const FiltersScreen = () => {
 
         {/* Categorical Dropdowns List */}
         <div className="w-full bg-white/60 backdrop-blur-sm rounded-[24px] border border-white/40 p-5 space-y-5 shadow-sm">
-          
-          <SelectDropdown 
+
+          <SelectDropdown
             label="Denomination"
             placeholder="Any"
             value={denomination}
@@ -149,7 +149,7 @@ export const FiltersScreen = () => {
             className="rounded-[14px] py-3 text-[13px] font-medium"
           />
 
-          <SelectDropdown 
+          <SelectDropdown
             label="Faith Commitment"
             placeholder="Any"
             value={faithCommitment}
@@ -164,7 +164,7 @@ export const FiltersScreen = () => {
             className="rounded-[14px] py-3 text-[13px] font-medium"
           />
 
-          <SelectDropdown 
+          <SelectDropdown
             label="Church Attendance"
             placeholder="Any"
             value={churchAttendance}
@@ -179,7 +179,7 @@ export const FiltersScreen = () => {
             className="rounded-[14px] py-3 text-[13px] font-medium"
           />
 
-          <SelectDropdown 
+          <SelectDropdown
             label="Looking For"
             placeholder="Any"
             value={intentions}
@@ -198,8 +198,8 @@ export const FiltersScreen = () => {
 
       {/* Bottom Action Button */}
       <div className="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-4 bg-[#f7f5f0]/80 backdrop-blur-md border-t border-gray-100 w-full shrink-0 z-10">
-        <button 
-          onClick={handleSave} 
+        <button
+          onClick={handleSave}
           disabled={isLoading}
           className="w-full bg-[#1f3d28] text-white font-bold text-[15px] rounded-full py-[16px] shadow-lg hover:bg-[#122418] transition-all transform active:scale-[0.99] flex items-center justify-center gap-2"
         >

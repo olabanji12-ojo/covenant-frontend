@@ -9,7 +9,7 @@ export interface User {
   dob: string;
   gender: 'Male' | 'Female';
   interested_in: 'Male' | 'Female' | 'Everyone';
-  
+
   // Faith Profile
   denomination: string;
   church_freq: string;
