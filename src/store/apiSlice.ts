@@ -1,7 +1,7 @@
 import { createApi, type BaseQueryFn } from '@reduxjs/toolkit/query/react';
 import type { AxiosRequestConfig, AxiosError } from 'axios';
 import apiClient from '../api/client';
-import type { User, Match, Prayer } from '../types';
+import type { User, Prayer } from '../types';
 
 // Create a custom baseQuery that uses our highly configured Axios client under the hood
 const axiosBaseQuery =
