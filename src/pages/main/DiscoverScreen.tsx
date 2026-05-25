@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { SlidersHorizontal, X, Heart, CheckCircle2, Search, Church, ArrowUpRight, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useGetDiscoveryFeedQuery } from '../../store/apiSlice';
 import { SwipeService } from '../../services/SwipeService';
 import { BottomNavBar } from '../../components/navigation/BottomNavBar';
 import { ProfileAttributeRow } from '../../components/ui/ProfileAttributeRow';
@@ -10,22 +11,17 @@ export const DiscoverScreen = () => {
   const navigate = useNavigate();
   const [feed, setFeed] = useState<User[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: feedData, isLoading } = useGetDiscoveryFeedQuery(undefined, {
+    refetchOnFocus: true, // Automatically fetches new matches when returning to app!
+  });
 
+  // Keep a local copy of feed to easily handle swiping removals without waiting for API
   useEffect(() => {
-    const fetchFeed = async () => {
-      try {
-        const users = await SwipeService.getDiscoveryFeed();
-        // Fallback to empty array if undefined
-        setFeed(users || []);
-      } catch (error) {
-        console.error("Failed to fetch discovery feed:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchFeed();
-  }, []);
+    if (feedData) {
+      setFeed(feedData);
+      setCurrentIndex(0);
+    }
+  }, [feedData]);
 
   const handleSwipe = async (type: 'like' | 'pass') => {
     if (currentIndex >= feed.length) return;

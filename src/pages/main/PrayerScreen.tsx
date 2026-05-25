@@ -1,70 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 import { BottomNavBar } from '../../components/navigation/BottomNavBar';
-import apiClient from '../../api/client';
-import type { Prayer, ApiResponse } from '../../types';
+import { useGetPrayersQuery, usePostPrayerMutation, usePostAmenMutation } from '../../store/apiSlice';
 import { HeartHandshake, Send, Heart } from 'lucide-react';
 
 export const PrayerScreen = () => {
   const [activeFilter, setActiveFilter] = useState<'Pray' | 'Prayed for me' | 'Answered'>('Pray');
-  const [prayers, setPrayers] = useState<Prayer[]>([]);
-  const [loading, setLoading] = useState(true);
   const [newPrayerContent, setNewPrayerContent] = useState('');
-  const [isPosting, setIsPosting] = useState(false);
-  
   const currentUser = useSelector((state: RootState) => state.auth.user);
-
-  const fetchPrayers = async () => {
-    try {
-      const res = await apiClient.get<ApiResponse<Prayer[]>>('/prayers');
-      if (res.data.data) {
-        setPrayers(res.data.data);
-      }
-    } catch (err) {
-      console.error("Failed to load prayers:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchPrayers();
-  }, []);
+  
+  const { data: prayersData, isLoading: loading } = useGetPrayersQuery(undefined, { refetchOnFocus: true });
+  const prayers = prayersData || [];
+  
+  const [postPrayerMutation, { isLoading: isPosting }] = usePostPrayerMutation();
+  const [postAmenMutation] = usePostAmenMutation();
 
   const handlePostPrayer = async () => {
     if (!newPrayerContent.trim()) return;
-    setIsPosting(true);
     try {
-      await apiClient.post('/prayers', { content: newPrayerContent });
+      await postPrayerMutation({ content: newPrayerContent }).unwrap();
       setNewPrayerContent('');
-      await fetchPrayers(); // Refresh the feed
     } catch (err) {
       console.error("Failed to post prayer:", err);
-    } finally {
-      setIsPosting(false);
     }
   };
 
   const handleAmen = async (prayerId: string) => {
-    // Optimistic UI update
-    setPrayers(current => current.map(p => {
-      if (p.id === prayerId && currentUser && !p.amens_by?.includes(currentUser.id)) {
-        return {
-          ...p,
-          amen_count: p.amen_count + 1,
-          amens_by: [...(p.amens_by || []), currentUser.id]
-        };
-      }
-      return p;
-    }));
-
     try {
-      await apiClient.post(`/prayers/${prayerId}/amen`);
+      await postAmenMutation(prayerId).unwrap();
     } catch (err) {
       console.error("Failed to add Amen:", err);
-      // Rollback optimistic update
-      await fetchPrayers();
     }
   };
 

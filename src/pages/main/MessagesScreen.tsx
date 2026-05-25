@@ -1,31 +1,15 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BottomNavBar } from '../../components/navigation/BottomNavBar';
 import { MessageCircle, Search } from 'lucide-react';
-import apiClient from '../../api/client';
-import type { ApiResponse, User } from '../../types';
+import { useGetMatchesQuery } from '../../store/apiSlice';
 
 export const MessagesScreen = () => {
   const navigate = useNavigate();
-  const [matches, setMatches] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchMatches = async () => {
-      try {
-        const res = await apiClient.get<ApiResponse<User[]>>('/matches');
-        if (res.data.data) {
-          setMatches(res.data.data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch matches for messages:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchMatches();
-  }, []);
+  const { data: matchesData, isLoading } = useGetMatchesQuery(undefined, {
+    pollingInterval: 10000, // Auto-poll every 10 seconds to catch new matches silently
+    refetchOnFocus: true,
+  });
+  const matches = matchesData || [];
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f7f5f0] w-full max-w-sm mx-auto relative overflow-hidden pb-28">
