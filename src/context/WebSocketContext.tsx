@@ -12,7 +12,7 @@ interface WebSocketContextType {
 const WebSocketContext = createContext<WebSocketContextType | null>(null);
 
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, token } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, token, user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
   const socketRef = useRef<WebSocket | null>(null);
   const [isConnected, setIsConnected] = React.useState(false);
@@ -39,9 +39,17 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     ws.onmessage = (event) => {
       try {
-        const message: Message = JSON.parse(event.data);
+        const payload = JSON.parse(event.data);
+        const message: Message = payload.message;
+        
+        // Calculate conversation bucket (Target User ID)
+        const conversationId = message.sender_id === user?.id ? payload.recipient_id : message.sender_id;
+        
+        // Map the match_id to conversationId so Redux and ActiveChatScreen match up perfectly
+        const mappedMessage = { ...message, match_id: conversationId };
+
         // Instantly push the new message to Redux State!
-        dispatch(receiveMessage(message));
+        dispatch(receiveMessage(mappedMessage));
       } catch (error) {
         console.error('Error parsing websocket message:', error);
       }
@@ -59,10 +67,10 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     };
   }, [isAuthenticated, token, dispatch]);
 
-  const sendMessage = (matchId: string, content: string, type: 'text' | 'prayer' = 'text') => {
+  const sendMessage = (targetUserId: string, content: string, type: 'text' | 'prayer' = 'text') => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       const payload = {
-        match_id: matchId,
+        target_user_id: targetUserId,
         content: content,
         type: type,
       };
