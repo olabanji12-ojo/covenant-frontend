@@ -1,0 +1,91 @@
+import axios from 'axios';
+import apiClient from '../api/client';
+import type { User, AuthResponse, ApiResponse } from '../types';
+
+export class AuthService {
+  /**
+   * Register a new user
+   * POST /auth/register
+   */
+  static async register(userData: Partial<User>): Promise<AuthResponse> {
+    try {
+      const response = await apiClient.post<ApiResponse<AuthResponse>>('/auth/register', userData);
+      if (response.data.error) throw new Error(response.data.error);
+      return response.data.data!;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response?.data?.error) {
+        throw new Error(error.response.data.error, { cause: error });
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Login an existing user
+   * POST /auth/login
+   */
+  static async login(email: string, password: string): Promise<AuthResponse> {
+    try {
+      const response = await apiClient.post<ApiResponse<AuthResponse>>('/auth/login', { email, password });
+      if (response.data.error) throw new Error(response.data.error);
+      return response.data.data!;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response?.data?.error) {
+        throw new Error(error.response.data.error, { cause: error });
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Fetch current user profile (using the JWT cookie automatically)
+   * GET /users/me
+   */
+  static async getMe(): Promise<User> {
+    const response = await apiClient.get<ApiResponse<User>>('/users/me');
+    if (response.data.error) throw new Error(response.data.error);
+    return response.data.data!;
+  }
+
+  /**
+   * Logout user (clears HttpOnly cookie)
+   * POST /auth/logout
+   */
+  static async logout(): Promise<void> {
+    await apiClient.post('/auth/logout');
+  }
+
+  /**
+   * Login with a social provider
+   * POST /auth/social
+   */
+  static async socialLogin(provider: string, token: string): Promise<AuthResponse> {
+    try {
+      const response = await apiClient.post<ApiResponse<AuthResponse>>('/auth/social', { provider, token });
+      if (response.data.error) throw new Error(response.data.error);
+      return response.data.data!;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response?.data?.error) {
+        throw new Error(error.response.data.error, { cause: error });
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Login as a guest (temporary shadow account)
+   * POST /auth/guest
+   */
+  static async guestLogin(): Promise<AuthResponse> {
+    try {
+      const response = await apiClient.post<ApiResponse<AuthResponse>>('/auth/guest');
+      if (response.data.error) throw new Error(response.data.error);
+      return response.data.data!;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response?.data?.error) {
+        throw new Error(error.response.data.error, { cause: error });
+      }
+      throw error;
+    }
+  }
+}
