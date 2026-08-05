@@ -1,18 +1,39 @@
 import { useState, useEffect } from 'react';
-import { SlidersHorizontal, X, Heart, CheckCircle2, Search, Church, ArrowUpRight, BookOpen } from 'lucide-react';
+import { SlidersHorizontal, X, Heart, CheckCircle2, Search, Church, ArrowUpRight, BookOpen, Sparkles, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { useGetDiscoveryFeedQuery } from '../../store/apiSlice';
 import { SwipeService } from '../../services/SwipeService';
 import { BottomNavBar } from '../../components/navigation/BottomNavBar';
 import { ProfileAttributeRow } from '../../components/ui/ProfileAttributeRow';
+import { updateUserProfile, fetchCurrentUser } from '../../store/authSlice';
+import type { RootState, AppDispatch } from '../../store';
 import type { User } from '../../types';
 
 export const DiscoverScreen = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector((state: RootState) => state.auth.user);
+
   const [feed, setFeed] = useState<User[]>([]);
-  const { data: feedData, isLoading } = useGetDiscoveryFeedQuery(undefined, {
+  const { data: feedData, isLoading, refetch } = useGetDiscoveryFeedQuery(undefined, {
     refetchOnFocus: true, // Automatically fetches new matches when returning to app!
   });
+
+  // Modal State for "Describe Your Ideal Partner"
+  const [showIdealPartnerModal, setShowIdealPartnerModal] = useState<boolean>(false);
+  const [partnerPrefText, setPartnerPrefText] = useState<string>('');
+  const [isSavingPref, setIsSavingPref] = useState<boolean>(false);
+
+  // Auto-open modal if user hasn't specified partner preferences yet!
+  useEffect(() => {
+    if (user) {
+      setPartnerPrefText(user.partner_pref_text || '');
+      if (!user.partner_pref_text) {
+        setShowIdealPartnerModal(true);
+      }
+    }
+  }, [user]);
 
   // Keep a local copy of feed to easily handle swiping removals without waiting for API
   useEffect(() => {
@@ -20,6 +41,21 @@ export const DiscoverScreen = () => {
       setFeed(feedData);
     }
   }, [feedData]);
+
+  const handleSaveIdealPartner = async () => {
+    if (!partnerPrefText.trim()) return;
+    setIsSavingPref(true);
+    try {
+      await dispatch(updateUserProfile({ partner_pref_text: partnerPrefText })).unwrap();
+      await dispatch(fetchCurrentUser());
+      refetch();
+      setShowIdealPartnerModal(false);
+    } catch (err) {
+      console.error("Failed to save partner preference:", err);
+    } finally {
+      setIsSavingPref(false);
+    }
+  };
 
   const handleSwipe = async (candidate: User, type: 'like' | 'pass') => {
     try {
@@ -78,8 +114,13 @@ export const DiscoverScreen = () => {
               <SlidersHorizontal size={26} strokeWidth={1.5} />
             </button>
             <h1 className="text-[24px] font-bold text-gray-900">Discover</h1>
-            {/* Empty div perfectly balances the left icon so the title is dead-center */}
-            <div className="w-[26px]" /> 
+            <button 
+              onClick={() => setShowIdealPartnerModal(true)}
+              title="Describe Ideal Partner"
+              className="bg-amber-100/90 hover:bg-amber-200 text-amber-900 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-xs border border-amber-300/60 transition-colors">
+              <Sparkles size={15} className="text-amber-700 fill-amber-300" />
+              <span className="text-[11px] font-bold">Ideal Partner</span>
+            </button> 
           </div>
           
           <div className="bg-[#f2e7c4] px-5 py-1.5 rounded-full mt-1">
@@ -248,6 +289,54 @@ export const DiscoverScreen = () => {
 
         {/* Bottom Nav Bar Integration! */}
         <BottomNavBar />
+
+        {/* Describe Your Ideal Partner Modal Popup */}
+        {showIdealPartnerModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+            <div className="bg-[#fdfaf5] border border-amber-200/90 rounded-[28px] p-6 w-full max-w-sm shadow-2xl animate-in fade-in zoom-in duration-200 relative">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-[#1a3322] flex items-center justify-center text-amber-300">
+                    <Sparkles size={16} />
+                  </div>
+                  <h2 className="text-[17px] font-bold text-gray-900">Describe Your Ideal Partner</h2>
+                </div>
+                <button 
+                  onClick={() => setShowIdealPartnerModal(false)}
+                  className="text-gray-400 hover:text-gray-700 p-1">
+                  <X size={18} />
+                </button>
+              </div>
+
+              <p className="text-[12.5px] text-gray-600 font-medium mb-4 leading-snug">
+                Tell our AI engine about the spiritual maturity, character traits, and values you seek in a partner to calculate your Covenant Matches.
+              </p>
+
+              <textarea
+                rows={4}
+                value={partnerPrefText}
+                onChange={(e) => setPartnerPrefText(e.target.value)}
+                placeholder="e.g. Seeking a prayerful, ministry-focused partner who values family, open communication, and kingdom stewardship..."
+                className="w-full bg-white border border-gray-200 rounded-[14px] p-3 text-[13px] font-medium text-gray-900 focus:outline-none focus:border-[#1a3322] resize-none mb-4 shadow-inner"
+              />
+
+              <button
+                onClick={handleSaveIdealPartner}
+                disabled={isSavingPref || !partnerPrefText.trim()}
+                className="w-full bg-[#1a3322] text-white font-bold text-[14px] rounded-full py-3.5 shadow-lg hover:bg-[#122418] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {isSavingPref ? (
+                  <Loader2 size={18} className="animate-spin text-white" />
+                ) : (
+                  <>
+                    <Sparkles size={15} className="text-amber-300" />
+                    <span>Save & Calculate My Matches</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
