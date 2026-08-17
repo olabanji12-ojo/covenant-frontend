@@ -44,8 +44,9 @@ export const CreateAccountForm = () => {
       return;
     }
 
-    if (isAuthenticated) {
-      // Social login flow: skip password, just update profile directly!
+    // Social login flow: skip password only for fully-registered social users.
+    // Guests (is_guest=true) must go through the full registration flow with a password.
+    if (isAuthenticated && !user?.is_guest) {
       try {
         let parsedDob = new Date(dob);
         const resultAction = await dispatch(updateUserProfile({
