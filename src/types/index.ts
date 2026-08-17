@@ -40,6 +40,9 @@ export interface User {
   shared_badges?: string[];
   icebreaker_prompt?: string;
 
+  // Guest account flag
+  is_guest?: boolean;
+
   created_at: string; // ISO String
   updated_at: string; // ISO String
 }

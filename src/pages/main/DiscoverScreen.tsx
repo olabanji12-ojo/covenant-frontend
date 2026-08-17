@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { SlidersHorizontal, X, Heart, CheckCircle2, Search, Church, ArrowUpRight, BookOpen, Sparkles, Loader2 } from 'lucide-react';
+import { SlidersHorizontal, X, Heart, CheckCircle2, Search, Church, ArrowUpRight, BookOpen, Sparkles, Loader2, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetDiscoveryFeedQuery } from '../../store/apiSlice';
@@ -26,8 +26,9 @@ export const DiscoverScreen = () => {
   const [isSavingPref, setIsSavingPref] = useState<boolean>(false);
 
   // Auto-open modal if user hasn't specified partner preferences yet!
+  // (Skip for guests — they can't save preferences until they register)
   useEffect(() => {
-    if (user) {
+    if (user && !user.is_guest) {
       setPartnerPrefText(user.partner_pref_text || '');
       if (!user.partner_pref_text) {
         setShowIdealPartnerModal(true);
@@ -129,6 +130,23 @@ export const DiscoverScreen = () => {
             </span>
           </div>
         </div>
+
+        {/* ── GUEST SIGN-UP BANNER ── */}
+        {user?.is_guest && (
+          <div className="mx-4 mb-2 bg-[#1a3322] rounded-2xl px-4 py-3 flex items-center justify-between gap-3 shadow-md">
+            <div className="flex flex-col">
+              <span className="text-white font-bold text-[13px] leading-snug">You're browsing as a Guest</span>
+              <span className="text-white/60 text-[11px] font-medium mt-0.5">Sign up to like, match & chat</span>
+            </div>
+            <button
+              onClick={() => navigate('/signup')}
+              className="flex items-center gap-1.5 bg-amber-400 hover:bg-amber-300 transition-colors text-[#1a3322] font-bold text-[12px] px-3 py-2 rounded-xl shrink-0"
+            >
+              <UserPlus size={14} strokeWidth={2.5} />
+              Sign Up Free
+            </button>
+          </div>
+        )}
 
         {/* Swipe Card Area */}
         <div className="flex-1 flex flex-col items-center justify-center w-full min-h-[60vh]">
