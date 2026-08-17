@@ -19,6 +19,16 @@ export const CreateAccountForm = () => {
   const [dob, setDob] = useState('');
   const [gender, setGender] = useState('man');
   const [interestedIn, setInterestedIn] = useState('woman');
+
+  // When gender changes, auto-set interestedIn to the opposite sex
+  const handleGenderChange = (newGender: string) => {
+    setGender(newGender);
+    // A man is only interested in a woman, and vice versa
+    setInterestedIn(newGender === 'man' ? 'woman' : 'man');
+  };
+
+  // The same-sex option is always disabled in the "Interested in" toggle
+  const disabledInterestedIn = gender === 'man' ? ['man'] : ['woman'];
   const [formError, setFormError] = useState('');
 
   // Update state if user loads after component mounts
@@ -114,18 +124,19 @@ export const CreateAccountForm = () => {
           <PillToggle
             label="I am a"
             value={gender}
-            onChange={setGender}
+            onChange={handleGenderChange}
             options={[
               { value: 'man', label: 'Man', icon: '/user (9) 1.svg' },
               { value: 'woman', label: 'Woman', icon: '/woman 1.svg' }
             ]}
           />
 
-          {/* Interested In Toggle */}
+          {/* Interested In Toggle — opposite sex only */}
           <PillToggle
             label="Interested in"
             value={interestedIn}
             onChange={setInterestedIn}
+            disabledValues={disabledInterestedIn}
             options={[
               { value: 'woman', label: 'Woman', icon: '/woman 1.svg' },
               { value: 'man', label: 'Man', icon: '/user (9) 1.svg' }

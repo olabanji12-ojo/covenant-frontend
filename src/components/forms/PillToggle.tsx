@@ -13,6 +13,7 @@ interface PillToggleProps {
   value: string;
   onChange: (value: string) => void;
   className?: string;
+  disabledValues?: string[]; // values that should be grayed out & unclickable
 }
 
 export const PillToggle: React.FC<PillToggleProps> = ({
@@ -21,6 +22,7 @@ export const PillToggle: React.FC<PillToggleProps> = ({
   value,
   onChange,
   className = '',
+  disabledValues = [],
 }) => {
   return (
     <div className={`flex flex-col space-y-2 w-full text-left ${className}`}>
@@ -32,18 +34,23 @@ export const PillToggle: React.FC<PillToggleProps> = ({
       {/* We use a grid or flex to lay the options out side-by-side */}
       <div className="flex gap-3">
         {options.map((opt) => {
-          const isActive = value === opt.value;
+          const isActive   = value === opt.value;
+          const isDisabled = disabledValues.includes(opt.value);
           const Icon = opt.icon;
           
           return (
             <button
               key={opt.value}
               type="button"
-              onClick={() => onChange(opt.value)}
+              disabled={isDisabled}
+              onClick={() => !isDisabled && onChange(opt.value)}
+              title={isDisabled ? 'Not available for your gender selection' : undefined}
               className={`flex-1 flex items-center justify-center gap-2 py-3.5 px-4 rounded-[14px] border outline-none transition-all ${
-                isActive 
-                  ? 'border-primary bg-primary/5 ring-1 ring-primary' // Active state (green border)
-                  : 'border-gray-300 bg-transparent hover:bg-gray-50' // Inactive state (gray border)
+                isDisabled
+                  ? 'border-gray-200 bg-gray-50 opacity-40 cursor-not-allowed' // Disabled state
+                  : isActive 
+                    ? 'border-primary bg-primary/5 ring-1 ring-primary'         // Active state
+                    : 'border-gray-300 bg-transparent hover:bg-gray-50'          // Inactive state
               }`}
             >
               {typeof Icon === 'string' ? (
