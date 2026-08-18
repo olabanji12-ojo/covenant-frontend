@@ -65,10 +65,24 @@ export const DiscoverScreen = () => {
   useEffect(() => {
     if (feedData) {
       let filtered = feedData;
+
+      // 1. Strict Gender Safeguard (Men see Women, Women see Men)
+      const targetGender = user?.interested_in && user.interested_in !== 'Everyone'
+        ? user.interested_in
+        : (user?.gender === 'Male' ? 'Female' : user?.gender === 'Female' ? 'Male' : null);
+
+      if (targetGender) {
+        filtered = filtered.filter(candidate => {
+          if (!candidate.gender) return true;
+          return candidate.gender.toLowerCase() === targetGender.toLowerCase();
+        });
+      }
+
+      // 2. Age preferences safeguard
       if (user?.min_age_pref || user?.max_age_pref) {
         const minAge = user.min_age_pref || 18;
         const maxAge = user.max_age_pref || 99;
-        filtered = feedData.filter(candidate => {
+        filtered = filtered.filter(candidate => {
           if (!candidate.dob) return true;
           const candidateAge = getAge(candidate.dob);
           return candidateAge >= minAge && candidateAge <= maxAge;
