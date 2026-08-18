@@ -3,13 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { StepProgressIndicator } from '../../components/navigation/StepProgressIndicator';
 import { SelectDropdown } from '../../components/ui/SelectDropdown';
 import { Button } from '../../components/ui/Button';
+import { NIGERIAN_DENOMINATIONS } from '../../constants/denominations';
 
 export const FaithProfileScreen = () => {
   const navigate = useNavigate();
-  const [denomination, setDenomination] = useState('');
+  const [selectedDenomination, setSelectedDenomination] = useState('');
+  const [customDenomination, setCustomDenomination] = useState('');
   const [church_freq, setChurchFreq] = useState('');
   const [prayer_freq, setPrayerFreq] = useState('');
   const [bible_freq, setBibleFreq] = useState('');
+
+  const finalDenomination = selectedDenomination === 'Other' 
+    ? (customDenomination.trim() || 'Other') 
+    : selectedDenomination;
 
   return (
     <div className="min-h-screen bg-[#f7f5f0] flex flex-col items-center py-10 px-6">
@@ -32,26 +38,33 @@ export const FaithProfileScreen = () => {
 
         {/* 2. Form Inputs (Rich & Specific Options!) */}
         <div className="w-full space-y-5 mb-8">
-          <SelectDropdown 
-            label="Denomination / Church Tradition"
-            placeholder="Select denomination"
-            value={denomination}
-            onChange={(e) => setDenomination(e.target.value)}
-            options={[
-              { value: 'Pentecostal / Charismatic', label: 'Pentecostal / Charismatic' },
-              { value: 'Evangelical', label: 'Evangelical' },
-              { value: 'Non-Denominational', label: 'Non-Denominational' },
-              { value: 'Baptist', label: 'Baptist' },
-              { value: 'Catholic', label: 'Catholic' },
-              { value: 'Anglican / Episcopal', label: 'Anglican / Episcopal' },
-              { value: 'Presbyterian / Reformed', label: 'Presbyterian / Reformed' },
-              { value: 'Methodist', label: 'Methodist' },
-              { value: 'Lutheran', label: 'Lutheran' },
-              { value: 'Orthodox', label: 'Orthodox (Eastern / Coptic)' },
-              { value: 'Seventh-day Adventist', label: 'Seventh-day Adventist' },
-              { value: 'Other', label: 'Other Christian Tradition' }
-            ]}
-          />
+          <div className="w-full flex flex-col gap-2">
+            <SelectDropdown 
+              label="Denomination / Church Tradition"
+              placeholder="Select your church / denomination"
+              value={selectedDenomination}
+              onChange={(e) => setSelectedDenomination(e.target.value)}
+              options={NIGERIAN_DENOMINATIONS.map((denom) => ({
+                value: denom,
+                label: denom,
+              }))}
+            />
+
+            {selectedDenomination === 'Other' && (
+              <div className="w-full flex flex-col gap-1.5 mt-2 animate-fadeIn">
+                <label className="text-[13px] font-semibold text-amber-900">
+                  Specify Your Church / Ministry Name
+                </label>
+                <input 
+                  type="text"
+                  placeholder="e.g. Grace Assembly International"
+                  value={customDenomination}
+                  onChange={(e) => setCustomDenomination(e.target.value)}
+                  className="w-full h-12 px-4 bg-white border border-amber-300 rounded-xl text-[14.5px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#8C1D40]/30 shadow-xs"
+                />
+              </div>
+            )}
+          </div>
 
           <SelectDropdown 
             label="Church Engagement & Attendance"
@@ -98,7 +111,7 @@ export const FaithProfileScreen = () => {
         <div className="mt-auto pt-10 pb-4 w-full flex flex-col items-center gap-5">
           <Button variant="primary" onClick={() => {
             navigate('/covenant-assessment', {
-              state: { denomination, church_freq, prayer_freq, bible_freq }
+              state: { denomination: finalDenomination, church_freq, prayer_freq, bible_freq }
             });
           }}>
             Continue

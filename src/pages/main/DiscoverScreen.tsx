@@ -36,12 +36,35 @@ export const DiscoverScreen = () => {
     }
   }, [user]);
 
+  const getAge = (dobStr?: string) => {
+    if (!dobStr) return 0;
+    const dob = new Date(dobStr);
+    if (isNaN(dob.getTime())) return 0;
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
   // Keep a local copy of feed to easily handle swiping removals without waiting for API
   useEffect(() => {
     if (feedData) {
-      setFeed(feedData);
+      let filtered = feedData;
+      if (user?.min_age_pref || user?.max_age_pref) {
+        const minAge = user.min_age_pref || 18;
+        const maxAge = user.max_age_pref || 99;
+        filtered = feedData.filter(candidate => {
+          if (!candidate.dob) return true;
+          const candidateAge = getAge(candidate.dob);
+          return candidateAge >= minAge && candidateAge <= maxAge;
+        });
+      }
+      setFeed(filtered);
     }
-  }, [feedData]);
+  }, [feedData, user]);
 
   const handleSaveIdealPartner = async () => {
     if (!partnerPrefText.trim()) return;

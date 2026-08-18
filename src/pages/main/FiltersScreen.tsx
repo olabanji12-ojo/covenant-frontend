@@ -5,6 +5,7 @@ import { ChevronLeft, Users, MapPin, Sparkles } from 'lucide-react';
 import { RangeSlider } from '../../components/ui/RangeSlider';
 import { SelectDropdown } from '../../components/ui/SelectDropdown';
 import { updateUserProfile, fetchCurrentUser } from '../../store/authSlice';
+import { NIGERIAN_DENOMINATIONS } from '../../constants/denominations';
 import type { RootState, AppDispatch } from '../../store';
 
 export const FiltersScreen = () => {
@@ -19,9 +20,17 @@ export const FiltersScreen = () => {
     user?.max_age_pref || 35
   ]);
   const [distance, setDistance] = useState<number>(user?.max_distance || 50);
-  const [denomination, setDenomination] = useState(
-    user?.preferred_denomination || user?.denomination || 'Any'
+
+  const initialDenom = user?.preferred_denomination || user?.denomination || 'Any';
+  const isStandardDenom = initialDenom === 'Any' || NIGERIAN_DENOMINATIONS.includes(initialDenom);
+
+  const [selectedDenom, setSelectedDenom] = useState<string>(
+    isStandardDenom ? initialDenom : 'Other'
   );
+  const [customDenom, setCustomDenom] = useState<string>(
+    isStandardDenom ? '' : initialDenom
+  );
+
   const [churchFreq, setChurchFreq] = useState(
     user?.preferred_church_freq || user?.church_freq || 'Any'
   );
@@ -35,12 +44,21 @@ export const FiltersScreen = () => {
   const [partnerPrefText, setPartnerPrefText] = useState(user?.partner_pref_text || '');
 
   // Keep state synced with user data once loaded
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     if (user) {
       setAgeRange([user.min_age_pref || 22, user.max_age_pref || 35]);
       setDistance(user.max_distance || 50);
-      setDenomination(user.preferred_denomination || user.denomination || 'Any');
+      
+      const userDenom = user.preferred_denomination || user.denomination || 'Any';
+      const isKnown = userDenom === 'Any' || NIGERIAN_DENOMINATIONS.includes(userDenom);
+      if (isKnown) {
+        setSelectedDenom(userDenom);
+        setCustomDenom('');
+      } else {
+        setSelectedDenom('Other');
+        setCustomDenom(userDenom);
+      }
+
       setChurchFreq(user.preferred_church_freq || user.church_freq || 'Any');
       setFaithCommitment(user.prayer_freq || 'Any');
       setChurchAttendance(user.preferred_church_freq || user.church_freq || 'Any');
@@ -50,8 +68,12 @@ export const FiltersScreen = () => {
   }, [user]);
 
   const handleSave = async () => {
+    const finalDenom = selectedDenom === 'Other' 
+      ? (customDenom.trim() || 'Other') 
+      : selectedDenom;
+
     const preferences = {
-      preferred_denomination: denomination,
+      preferred_denomination: finalDenom,
       preferred_church_freq: churchFreq,
       min_age_pref: ageRange[0],
       max_age_pref: ageRange[1],
@@ -75,7 +97,8 @@ export const FiltersScreen = () => {
   const handleClearAll = () => {
     setAgeRange([18, 60]);
     setDistance(50);
-    setDenomination('Any');
+    setSelectedDenom('Any');
+    setCustomDenom('');
     setFaithCommitment('Any');
     setChurchAttendance('Any');
     setIntention('Any');
@@ -134,28 +157,34 @@ export const FiltersScreen = () => {
         {/* Categorical Dropdowns List */}
         <div className="w-full bg-white/60 backdrop-blur-sm rounded-[24px] border border-white/40 p-5 space-y-5 shadow-sm">
 
-          <SelectDropdown
-            label="Denomination"
-            placeholder="Any"
-            value={denomination}
-            onChange={(e) => setDenomination(e.target.value)}
-            options={[
-              { value: 'Any', label: 'Any' },
-              { value: 'Pentecostal / Charismatic', label: 'Pentecostal / Charismatic' },
-              { value: 'Evangelical', label: 'Evangelical' },
-              { value: 'Non-Denominational', label: 'Non-Denominational' },
-              { value: 'Baptist', label: 'Baptist' },
-              { value: 'Catholic', label: 'Catholic' },
-              { value: 'Anglican / Episcopal', label: 'Anglican / Episcopal' },
-              { value: 'Presbyterian / Reformed', label: 'Presbyterian / Reformed' },
-              { value: 'Methodist', label: 'Methodist' },
-              { value: 'Lutheran', label: 'Lutheran' },
-              { value: 'Orthodox', label: 'Orthodox (Eastern / Coptic)' },
-              { value: 'Seventh-day Adventist', label: 'Seventh-day Adventist' },
-              { value: 'Other', label: 'Other' }
-            ]}
-            className="rounded-[14px] py-3 text-[13px] font-medium"
-          />
+          <div className="w-full flex flex-col gap-2">
+            <SelectDropdown
+              label="Denomination"
+              placeholder="Any"
+              value={selectedDenom}
+              onChange={(e) => setSelectedDenom(e.target.value)}
+              options={[
+                { value: 'Any', label: 'Any Denomination' },
+                ...NIGERIAN_DENOMINATIONS.map((d) => ({ value: d, label: d }))
+              ]}
+              className="rounded-[14px] py-3 text-[13px] font-medium"
+            />
+
+            {selectedDenom === 'Other' && (
+              <div className="w-full flex flex-col gap-1.5 mt-1 animate-fadeIn">
+                <label className="text-[12px] font-bold text-amber-900">
+                  Specify Preferred Church / Ministry
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Grace Assembly International"
+                  value={customDenom}
+                  onChange={(e) => setCustomDenom(e.target.value)}
+                  className="w-full bg-white border border-amber-300 rounded-[12px] px-4 py-2.5 text-[13px] font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#1f3d28]/20 shadow-xs"
+                />
+              </div>
+            )}
+          </div>
 
           <SelectDropdown
             label="Faith Commitment"
