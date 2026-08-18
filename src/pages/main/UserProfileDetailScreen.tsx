@@ -43,6 +43,10 @@ export const UserProfileDetailScreen = () => {
 
   const handleLike = async () => {
     if (!user?.id) return;
+    if (authUser?.is_guest) {
+      navigate('/signup');
+      return;
+    }
     try {
       const match = await SwipeService.likeUser(user.id);
       if (match && match.status === 'matched') {
@@ -57,6 +61,10 @@ export const UserProfileDetailScreen = () => {
 
   const handlePass = async () => {
     if (!user?.id) return;
+    if (authUser?.is_guest) {
+      navigate('/signup');
+      return;
+    }
     try {
       await SwipeService.passUser(user.id);
       navigate(-1); // Go back to feed

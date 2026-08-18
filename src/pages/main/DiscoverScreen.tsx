@@ -107,7 +107,15 @@ export const DiscoverScreen = () => {
     }
   };
 
+  const [swipingId, setSwipingId] = useState<string | null>(null);
+
   const handleSwipe = async (candidate: User, type: 'like' | 'pass') => {
+    if (!candidate.id || swipingId === candidate.id) return;
+    setSwipingId(candidate.id);
+
+    // Optimistically remove card from feed for instant UI feedback!
+    setFeed((prev) => prev.filter((u) => u.id !== candidate.id));
+
     try {
       if (type === 'like') {
         const match = await SwipeService.likeUser(candidate.id);
@@ -121,10 +129,9 @@ export const DiscoverScreen = () => {
       }
     } catch (error) {
       console.error(`Failed to ${type} user:`, error);
+    } finally {
+      setSwipingId(null);
     }
-    
-    // Remove the swiped user locally so the card disappears from the horizontal feed
-    setFeed((prev) => prev.filter((user) => user.id !== candidate.id));
   };
 
   // ==========================================
@@ -327,12 +334,23 @@ export const DiscoverScreen = () => {
                   </div>
 
                   {/* Action Area inside each card */}
-                  <div className="w-full bg-[#fdfaf5] pb-5 pt-3 shrink-0 flex justify-center gap-6 px-6 border-t border-gray-100/50 shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.05)] z-10">
-                    
+                  <div 
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full bg-[#fdfaf5] pb-5 pt-3 shrink-0 flex justify-center gap-6 px-6 border-t border-gray-100/50 shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.05)] z-10"
+                  >
                     {/* Pass Button */}
-                    <div className="flex flex-col items-center gap-1 cursor-pointer hover:opacity-90 transition-opacity">
+                    <div 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (user?.is_guest) {
+                          navigate('/signup');
+                          return;
+                        }
+                        handleSwipe(candidate, 'pass');
+                      }}
+                      className="flex flex-col items-center gap-1 cursor-pointer hover:opacity-90 transition-opacity active:scale-95"
+                    >
                       <button 
-                        onClick={() => handleSwipe(candidate, 'pass')}
                         className="w-[50px] h-[50px] rounded-full bg-white flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.08)] border border-gray-100 text-gray-900"
                       >
                         <X size={24} strokeWidth={2.5} />
@@ -341,9 +359,18 @@ export const DiscoverScreen = () => {
                     </div>
 
                     {/* Like Button */}
-                    <div className="flex flex-col items-center gap-1 cursor-pointer hover:opacity-90 transition-opacity">
+                    <div 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (user?.is_guest) {
+                          navigate('/signup');
+                          return;
+                        }
+                        handleSwipe(candidate, 'like');
+                      }}
+                      className="flex flex-col items-center gap-1 cursor-pointer hover:opacity-90 transition-opacity active:scale-95"
+                    >
                       <button 
-                        onClick={() => handleSwipe(candidate, 'like')}
                         className="w-[50px] h-[50px] rounded-full bg-[#1a3322] flex items-center justify-center shadow-[0_4px_12px_rgba(26,51,34,0.2)] border border-[#1a3322] text-white"
                       >
                         <Heart size={22} strokeWidth={3} className="fill-white" />
