@@ -12,6 +12,7 @@ export interface User {
 
   // Faith Profile
   denomination: string;
+  custom_church?: string;
   church_assembly?: string;
   church_freq: string;
   prayer_freq: string;

@@ -31,4 +31,14 @@ export class SwipeService {
     if (response.data.error) throw new Error(response.data.error);
     return response.data.data!;
   }
+
+  /**
+   * Get Pending Likes / Connection Requests
+   * GET /matches/requests
+   */
+  static async getPendingRequests(): Promise<User[]> {
+    const response = await apiClient.get<ApiResponse<User[]>>('/matches/requests');
+    if (response.data.error) throw new Error(response.data.error);
+    return response.data.data!;
+  }
 }

@@ -24,6 +24,18 @@ export const DiscoverScreen = () => {
   const [showIdealPartnerModal, setShowIdealPartnerModal] = useState<boolean>(false);
   const [partnerPrefText, setPartnerPrefText] = useState<string>('');
   const [isSavingPref, setIsSavingPref] = useState<boolean>(false);
+  const [incomingRequestIds, setIncomingRequestIds] = useState<Set<string>>(new Set());
+
+  // Fetch pending connection requests to display badges on candidate cards!
+  useEffect(() => {
+    SwipeService.getPendingRequests()
+      .then(requests => {
+        if (Array.isArray(requests)) {
+          setIncomingRequestIds(new Set(requests.map(r => r.id)));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Auto-open modal if user hasn't specified partner preferences yet!
   // (Skip for guests — they can't save preferences until they register)
@@ -221,8 +233,13 @@ export const DiscoverScreen = () => {
                         <span className="text-[8px] font-bold text-amber-200/90 leading-none uppercase tracking-wider">Covenant Match</span>
                       </div>
 
-                      {/* Shared Heart Badges Overlay */}
-                      {candidate.shared_badges && candidate.shared_badges.length > 0 && (
+                      {/* Shared Heart Badges Overlay or Incoming Request Badge */}
+                      {candidate.id && incomingRequestIds.has(candidate.id) ? (
+                        <div className="absolute top-5 left-5 bg-gradient-to-r from-emerald-600 to-teal-700 text-white px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-lg border border-emerald-300/40 animate-pulse">
+                          <Sparkles size={14} className="text-amber-300 fill-amber-300" />
+                          <span className="text-[10px] font-bold tracking-wide">Sent Request</span>
+                        </div>
+                      ) : (candidate.shared_badges && candidate.shared_badges.length > 0 && (
                         <div className="absolute top-5 left-5 flex flex-col gap-1 max-w-[65%]">
                           {candidate.shared_badges.slice(0, 2).map((badge, idx) => (
                             <span key={idx} className="bg-black/60 backdrop-blur-xs text-white text-[10px] font-semibold px-2.5 py-1 rounded-full border border-white/20 truncate">
@@ -230,7 +247,7 @@ export const DiscoverScreen = () => {
                             </span>
                           ))}
                         </div>
-                      )}
+                      ))}
 
                       {/* User Info Overlay */}
                       <div className="absolute bottom-4 left-0 right-0 px-6 text-white">
