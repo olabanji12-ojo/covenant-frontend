@@ -36,10 +36,16 @@ export interface User {
   scenario_answers?: Record<string, string>;
   unlocked_badges?: string[];
 
+  // Genotype & Medical Profile
+  genotype?: string;
+  strict_genotype_filter?: boolean;
+
   // Dynamic Match Attributes
   match_score?: number;
   shared_badges?: string[];
   icebreaker_prompt?: string;
+  genotype_status?: 'compatible' | 'incompatible' | 'unverified';
+  genotype_warning?: string;
 
   // Guest account flag
   is_guest?: boolean;

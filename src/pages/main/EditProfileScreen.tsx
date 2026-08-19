@@ -20,6 +20,7 @@ export const EditProfileScreen = () => {
   const [bio, setBio] = useState(user?.bio || '');
   const [churchAssembly, setChurchAssembly] = useState(user?.church_assembly || '');
   const [partnerPrefText, setPartnerPrefText] = useState(user?.partner_pref_text || '');
+  const [genotype, setGenotype] = useState(user?.genotype || 'AA');
   const [photo, setPhoto] = useState(user?.photos?.[0] || '/male1.png');
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +70,7 @@ export const EditProfileScreen = () => {
         bio: bio,
         church_assembly: churchAssembly,
         partner_pref_text: partnerPrefText,
+        genotype: genotype,
       }));
       navigate(-1); // Go back to profile screen
     } catch (error) {
@@ -186,6 +188,22 @@ export const EditProfileScreen = () => {
               className="w-full bg-white border border-gray-200 rounded-[12px] px-4 py-3 text-[15px] font-medium text-gray-900 focus:outline-none focus:border-[#2a8b75] transition-colors resize-none"
               placeholder="Qualities, faith commitment, or background you seek in a partner..."
             />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-bold text-[#1a3322]">Genotype (Pre-Marital Health Check)</label>
+            <select
+              value={genotype}
+              onChange={(e) => setGenotype(e.target.value)}
+              className="w-full bg-white border border-gray-200 rounded-[12px] px-4 py-3.5 text-[15px] font-medium text-gray-900 focus:outline-none focus:border-[#2a8b75] transition-colors appearance-none"
+            >
+              <option value="AA">AA — Compatible with All Genotypes (Safe)</option>
+              <option value="AS">AS — Sickle Cell Carrier (Compatible with AA ONLY)</option>
+              <option value="AC">AC — Hemoglobin C Carrier (Compatible with AA ONLY)</option>
+              <option value="SS">SS — Sickle Cell Anemia (Compatible with AA ONLY)</option>
+              <option value="SC">SC — Hemoglobin SC Disease (Compatible with AA ONLY)</option>
+              <option value="Unknown">Prefer to verify later / Unverified</option>
+            </select>
           </div>
 
           <div className="flex flex-col gap-1.5">

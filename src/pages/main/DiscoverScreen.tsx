@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { SlidersHorizontal, X, Heart, CheckCircle2, Search, Church, ArrowUpRight, BookOpen, Sparkles, Loader2, UserPlus } from 'lucide-react';
+import { SlidersHorizontal, X, Heart, CheckCircle2, Search, Church, ArrowUpRight, BookOpen, Sparkles, Loader2, UserPlus, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useGetDiscoveryFeedQuery } from '../../store/apiSlice';
@@ -260,15 +260,30 @@ export const DiscoverScreen = () => {
                           <Sparkles size={14} className="text-amber-300 fill-amber-300" />
                           <span className="text-[10px] font-bold tracking-wide">Sent Request</span>
                         </div>
-                      ) : (candidate.shared_badges && candidate.shared_badges.length > 0 && (
-                        <div className="absolute top-5 left-5 flex flex-col gap-1 max-w-[65%]">
-                          {candidate.shared_badges.slice(0, 2).map((badge, idx) => (
+                      ) : (
+                        <div className="absolute top-5 left-5 flex flex-col gap-1.5 max-w-[65%]">
+                          {candidate.genotype && (
+                            <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border backdrop-blur-xs shadow-xs text-white truncate ${
+                              candidate.genotype_status === 'compatible'
+                                ? 'bg-emerald-600/90 border-emerald-300/40'
+                                : candidate.genotype_status === 'incompatible'
+                                ? 'bg-amber-600/90 border-amber-300/40'
+                                : 'bg-stone-500/90 border-stone-300/40'
+                            }`}>
+                              {candidate.genotype_status === 'compatible' 
+                                ? `🩺 Marital Compatible (${candidate.genotype})` 
+                                : candidate.genotype_status === 'incompatible' 
+                                ? `🤝 Friendship & Fellowship Only (${candidate.genotype})` 
+                                : `⚠️ Genotype ${candidate.genotype} Unverified`}
+                            </span>
+                          )}
+                          {candidate.shared_badges && candidate.shared_badges.length > 0 && candidate.shared_badges.slice(0, 1).map((badge, idx) => (
                             <span key={idx} className="bg-black/60 backdrop-blur-xs text-white text-[10px] font-semibold px-2.5 py-1 rounded-full border border-white/20 truncate">
                               {badge}
                             </span>
                           ))}
                         </div>
-                      ))}
+                      )}
 
                       {/* User Info Overlay */}
                       <div className="absolute bottom-4 left-0 right-0 px-6 text-white">
@@ -307,8 +322,19 @@ export const DiscoverScreen = () => {
                         </p>
                       </div>
 
-                      {/* Faith Attributes List */}
+                      {/* Faith & Health Attributes List */}
                       <div className="w-full flex flex-col">
+                        <ProfileAttributeRow 
+                          icon={<Activity size={17} strokeWidth={2} className="text-emerald-700" />} 
+                          title="Genotype Health" 
+                          value={
+                            candidate.genotype_status === 'compatible'
+                              ? `🩺 Genotype ${candidate.genotype || 'AA'} (Medical Safe)`
+                              : candidate.genotype_status === 'incompatible'
+                              ? `🚫 Genotype ${candidate.genotype || 'AS'} (High Medical Risk)`
+                              : `⚠️ Genotype ${candidate.genotype || 'Unverified'} (Verification Recommended)`
+                          } 
+                        />
                         <ProfileAttributeRow 
                           icon={<Church size={17} strokeWidth={2} />} 
                           title="Church" 

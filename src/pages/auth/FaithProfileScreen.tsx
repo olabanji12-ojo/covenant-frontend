@@ -12,6 +12,7 @@ export const FaithProfileScreen = () => {
   const [church_freq, setChurchFreq] = useState('');
   const [prayer_freq, setPrayerFreq] = useState('');
   const [bible_freq, setBibleFreq] = useState('');
+  const [genotype, setGenotype] = useState('AA');
 
   const finalDenomination = selectedDenomination === 'Other' 
     ? (customDenomination.trim() || 'Other') 
@@ -29,10 +30,10 @@ export const FaithProfileScreen = () => {
         {/* Header Section */}
         <div className="flex flex-col items-center mb-8">
           <h1 className="text-[26px] font-bold text-gray-900 mb-3 text-center">
-            Tell us about your faith
+            Tell us about your faith & health
           </h1>
           <p className="text-[15px] text-gray-500 text-center px-4 leading-snug">
-            This helps us find better matches<br />with shared values.
+            This helps us find better matches<br />with shared values and medical safety.
           </p>
         </div>
 
@@ -65,6 +66,21 @@ export const FaithProfileScreen = () => {
               </div>
             )}
           </div>
+
+          <SelectDropdown 
+            label="Genotype Check (Pre-Marital Health Safety)"
+            placeholder="Select your genotype"
+            value={genotype}
+            onChange={(e) => setGenotype(e.target.value)}
+            options={[
+              { value: 'AA', label: 'AA — Compatible with All Genotypes (Safe)' },
+              { value: 'AS', label: 'AS — Sickle Cell Carrier (Compatible with AA ONLY)' },
+              { value: 'AC', label: 'AC — Hemoglobin C Carrier (Compatible with AA ONLY)' },
+              { value: 'SS', label: 'SS — Sickle Cell Anemia (Compatible with AA ONLY)' },
+              { value: 'SC', label: 'SC — Hemoglobin SC Disease (Compatible with AA ONLY)' },
+              { value: 'Unknown', label: 'Prefer to verify later / Unverified' }
+            ]}
+          />
 
           <SelectDropdown 
             label="Church Engagement & Attendance"
@@ -111,7 +127,7 @@ export const FaithProfileScreen = () => {
         <div className="mt-auto pt-10 pb-4 w-full flex flex-col items-center gap-5">
           <Button variant="primary" onClick={() => {
             navigate('/covenant-assessment', {
-              state: { denomination: finalDenomination, church_freq, prayer_freq, bible_freq }
+              state: { denomination: finalDenomination, church_freq, prayer_freq, bible_freq, genotype }
             });
           }}>
             Continue
