@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { StepProgressIndicator } from '../../components/navigation/StepProgressIndicator';
 import { Button } from '../../components/ui/Button';
-import axios from 'axios';
+import apiClient from '../../api/client';
 
 const ONBOARDING_SCENARIOS = [
   {
@@ -65,18 +65,14 @@ export const CovenantAssessmentScreen = () => {
     const newAnswers = { ...answers, [currentQuestion.id]: selectedOption };
     setAnswers(newAnswers);
 
-    // Save answer to backend if authenticated token is stored
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        await axios.post(
-          '/api/v1/users/scenarios/answer',
-          { question_id: currentQuestion.id, option_id: selectedOption },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      } catch (e) {
-        console.warn('Could not sync scenario answer asynchronously:', e);
-      }
+    // Save answer to backend
+    try {
+      await apiClient.post('/users/scenarios/answer', {
+        question_id: currentQuestion.id,
+        option_id: selectedOption,
+      });
+    } catch (e) {
+      console.warn('Could not sync scenario answer asynchronously:', e);
     }
 
     if (currentIndex < ONBOARDING_SCENARIOS.length - 1) {

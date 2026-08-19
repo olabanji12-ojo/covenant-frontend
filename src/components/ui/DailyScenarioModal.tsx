@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import apiClient from '../../api/client';
 import { Button } from './Button';
 
 interface DailyScenarioModalProps {
@@ -30,15 +30,11 @@ export const DailyScenarioModal = ({ isOpen, onClose, onAnswerSubmitted }: Daily
     if (!selectedOption) return;
 
     setIsSubmitting(true);
-    const token = localStorage.getItem('token');
     try {
-      if (token) {
-        await axios.post(
-          '/api/v1/users/scenarios/answer',
-          { question_id: DAILY_SCENARIO_PROMPT.id, option_id: selectedOption },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      }
+      await apiClient.post('/users/scenarios/answer', {
+        question_id: DAILY_SCENARIO_PROMPT.id,
+        option_id: selectedOption,
+      });
       setIsSuccess(true);
       setTimeout(() => {
         setIsSuccess(false);
