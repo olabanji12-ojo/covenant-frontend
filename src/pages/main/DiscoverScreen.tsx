@@ -20,8 +20,9 @@ export const DiscoverScreen = () => {
     refetchOnFocus: true, // Automatically fetches new matches when returning to app!
   });
 
-  // Modal State for "Describe Your Ideal Partner"
+  // Modal State for "Describe Your Ideal Partner" & "Connection Request Sent"
   const [showIdealPartnerModal, setShowIdealPartnerModal] = useState<boolean>(false);
+  const [requestSentCandidate, setRequestSentCandidate] = useState<User | null>(null);
   const [partnerPrefText, setPartnerPrefText] = useState<string>('');
   const [isSavingPref, setIsSavingPref] = useState<boolean>(false);
   const [incomingRequestIds, setIncomingRequestIds] = useState<Set<string>>(new Set());
@@ -123,6 +124,9 @@ export const DiscoverScreen = () => {
           // If it's a match, go to match success screen!
           navigate('/app/match-success', { state: { matchUser: candidate } });
           return;
+        } else {
+          // Show Connection Request Sent Popup!
+          setRequestSentCandidate(candidate);
         }
       } else {
         await SwipeService.passUser(candidate.id);
@@ -458,6 +462,27 @@ export const DiscoverScreen = () => {
                     <span>Save & Calculate My Matches</span>
                   </>
                 )}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Connection Request Sent Popup Modal */}
+        {requestSentCandidate && (
+          <div className="fixed inset-0 bg-black/65 backdrop-blur-xs z-50 flex items-center justify-center p-5">
+            <div className="bg-[#fdfaf5] border border-amber-200/90 rounded-[28px] p-6 w-full max-w-sm shadow-2xl animate-in fade-in zoom-in duration-200 relative text-center">
+              <div className="w-16 h-16 bg-[#1a3322] rounded-full flex items-center justify-center text-amber-300 mx-auto mb-4 shadow-md">
+                <Sparkles size={28} />
+              </div>
+              <h2 className="text-[20px] font-bold text-gray-900 mb-2">Connection Request Sent! 🕊️</h2>
+              <p className="text-[13.5px] text-gray-600 font-medium leading-relaxed mb-6">
+                You have sent a request to <span className="font-bold text-[#1a3322]">{requestSentCandidate.first_name || 'this user'}</span>. You cannot message them yet until they accept or like you back!
+              </p>
+              <button
+                onClick={() => setRequestSentCandidate(null)}
+                className="w-full bg-[#1a3322] text-white font-bold text-[14px] rounded-full py-3.5 shadow-lg hover:bg-[#122418] transition-all"
+              >
+                Got It, Continue Discovering
               </button>
             </div>
           </div>

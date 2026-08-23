@@ -40,6 +40,7 @@ export const UserProfileDetailScreen = () => {
 
   const [isUnmatchOpen, setIsUnmatchOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
+  const [showRequestSentModal, setShowRequestSentModal] = useState(false);
 
   const handleLike = async () => {
     if (!user?.id) return;
@@ -52,7 +53,7 @@ export const UserProfileDetailScreen = () => {
       if (match && match.status === 'matched') {
         navigate('/app/match-success', { state: { matchUser: user } });
       } else {
-        navigate(-1); // Go back to feed
+        setShowRequestSentModal(true);
       }
     } catch (err) {
       console.error('Failed to like user:', err);
@@ -246,6 +247,30 @@ export const UserProfileDetailScreen = () => {
             navigate('/app/discover'); // Go back to discovery or matches
           }}
         />
+      )}
+
+      {/* Connection Request Sent Popup Modal */}
+      {showRequestSentModal && (
+        <div className="fixed inset-0 bg-black/65 backdrop-blur-xs z-50 flex items-center justify-center p-5">
+          <div className="bg-[#fdfaf5] border border-amber-200/90 rounded-[28px] p-6 w-full max-w-sm shadow-2xl animate-in fade-in zoom-in duration-200 relative text-center">
+            <div className="w-16 h-16 bg-[#1a3322] rounded-full flex items-center justify-center text-amber-300 mx-auto mb-4 shadow-md">
+              <Heart size={28} className="fill-amber-300" />
+            </div>
+            <h2 className="text-[20px] font-bold text-gray-900 mb-2">Connection Request Sent! 🕊️</h2>
+            <p className="text-[13.5px] text-gray-600 font-medium leading-relaxed mb-6">
+              You have sent a request to <span className="font-bold text-[#1a3322]">{name}</span>. You cannot message them yet until they accept or like you back!
+            </p>
+            <button
+              onClick={() => {
+                setShowRequestSentModal(false);
+                navigate(-1);
+              }}
+              className="w-full bg-[#1a3322] text-white font-bold text-[14px] rounded-full py-3.5 shadow-lg hover:bg-[#122418] transition-all"
+            >
+              Got It, Return to Feed
+            </button>
+          </div>
+        </div>
       )}
 
     </div>
