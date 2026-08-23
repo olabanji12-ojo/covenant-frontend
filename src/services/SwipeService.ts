@@ -1,5 +1,7 @@
 import apiClient from '../api/client';
 import type { User, Match, ApiResponse } from '../types';
+import { store } from '../store';
+import { apiSlice } from '../store/apiSlice';
 
 export class SwipeService {
   /**
@@ -13,12 +15,14 @@ export class SwipeService {
   }
 
   /**
-   * Swipe Right (Like)
+   * Swipe Right (Like / Connection Request)
    * POST /matches/{id}/like
    */
   static async likeUser(targetUserId: string): Promise<Match> {
     const response = await apiClient.post<ApiResponse<Match>>(`/matches/${targetUserId}/like`);
     if (response.data.error) throw new Error(response.data.error);
+    // Invalidate RTK Query cache so Discover feed and Matches list refresh automatically!
+    store.dispatch(apiSlice.util.invalidateTags(['Discover', 'Match']));
     return response.data.data!;
   }
 
@@ -29,6 +33,8 @@ export class SwipeService {
   static async passUser(targetUserId: string): Promise<Match> {
     const response = await apiClient.post<ApiResponse<Match>>(`/matches/${targetUserId}/pass`);
     if (response.data.error) throw new Error(response.data.error);
+    // Invalidate RTK Query cache so Discover feed refreshes automatically!
+    store.dispatch(apiSlice.util.invalidateTags(['Discover']));
     return response.data.data!;
   }
 
