@@ -77,6 +77,7 @@ export interface Match {
 }
 
 export interface MatchResponse {
+  match_id?: string;
   user: User;
   last_message: Message | null;
 }
